@@ -11,16 +11,7 @@ h1 {
   clear: both;
 }
 
-/*#rowA {
-}
-
-#rowB {
-}
-
-#rowC {
-}*/
-
-#announce {
+.announce {
   margin: 100px 0;
   font-family: monospace;
   text-align: center;
@@ -33,7 +24,7 @@ button {
   height: 60px;
   line-height: 60px;
   width: 60px;
-  padding: 0px;
+  padding: 0;
   float: left;
   margin: 10px;
   font-family: "Century Gothic", sans-serif;
