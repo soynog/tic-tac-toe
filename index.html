@@ -1,26 +1,35 @@
 <!DOCTYPE html>
 <html>
-    <head>
-      <title>Example</title>
-
-      <script src="vendor.bundle.js" type="text/javascript" charset="utf-8" defer></script>
-      <script src="bundle.js" type="text/javascript" charset="utf-8" defer></script>
-    </head>
-    <body class="container-fluid">
-      <form id="book-form">
-        <label>Book id:
-          <input type="text" name="book-id" value="">
-        </label>
-        <input type="submit" name="submit" value="GET Book(s)">
-      </form>
-      <h1>Example</h1>
-
-      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
-      eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad
-      minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
-      ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-      velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-      cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id
-      est laborum.</p>
-    </body>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/styles/main.css"/>
+    <script src="vendor.bundle.js" type="text/javascript" charset="utf-8" defer></script>
+    <script src="bundle.js" type="text/javascript" charset="utf-8" defer></script>
+    <title>Tic Tac Toe</title>
+  </head>
+  <body>
+    <header>
+      <div class="row">
+        <h1>tic tac toe</h1>
+      </div>
+    </header>
+    <div class="row" id="rowA">
+      <button id="ind-0">X</button>
+      <button id="ind-1"></button>
+      <button id="ind-2"></button>
+    </div>
+    <div class="row" id="rowB">
+      <button id="ind-3"></button>
+      <button id="ind-4"></button>
+      <button id="ind-5"></button>
+    </div>
+    <div class="row" id="rowC">
+      <button id="ind-6"></button>
+      <button id="ind-7"></button>
+      <button id="ind-8"></button>
+    </div>
+    <div id="announce">
+      Player X's Turn
+    </div>
+  </body>
 </html>

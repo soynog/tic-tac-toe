@@ -1,0 +1,43 @@
+h1 {
+  font-family: monospace;
+  font-size: 26pt;
+}
+
+.row {
+  text-align: center;
+  width: 240px;
+  position: relative;
+  font-size: 24pt;
+  clear: both;
+}
+
+/*#rowA {
+}
+
+#rowB {
+}
+
+#rowC {
+}*/
+
+#announce {
+  margin: 100px 0;
+  font-family: monospace;
+  text-align: center;
+  font-size: 20px;
+  clear: both;
+  width: 240px;
+}
+
+button {
+  height: 60px;
+  line-height: 60px;
+  width: 60px;
+  padding: 0px;
+  float: left;
+  margin: 10px;
+  font-family: "Century Gothic", sans-serif;
+  font-weight: bold;
+  font-size: 40pt;
+  text-align: center;
+}
