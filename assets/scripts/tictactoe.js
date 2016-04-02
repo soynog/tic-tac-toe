@@ -44,23 +44,26 @@ const checkFull = function() {
 
 // Game.prototype turn function: gets user input, makes a place switches whose turn it is, checks win, checks if board is full
 const playTurn = function(index) {
-  if(place.call(this,index,this.turn)) {
-    if(checkWin.call(this,index)) {
-      console.log('Game Over! Player ' + this.turn + ' wins!!!');
-    } else if (checkFull.call(this)) {
-      console.log("Game Over! It's a tie.");
+  if(!this.over) {
+    if(place.call(this,index,this.turn)) {
+      if(checkWin.call(this,index)) {
+        $('.announce').text('Game Over! Player ' + this.turn + ' wins!!!');
+        this.over = true;
+      } else if (checkFull.call(this)) {
+        $('.announce').text("Game Over! It's a tie.");
+        this.over = true;
+      } else {
+        this.turn = this.turn === 'x' ? 'o' : 'x';
+        $('.announce').text("Player " + this.turn + "'s turn.");
+        // Next turn
+      }
     } else {
-      this.turn = this.turn === 'x' ? 'o' : 'x';
-      console.log(this.cells);
-      // Next turn
+      $('.announce').text("Invalid Move! Try again, player " + this.turn + ".");
     }
-  } else {
-    console.log("Invalid Move! Try again.");
   }
 };
 
 // Game.prototype end function: ends game, prints a message
-
 
 Game.prototype.playTurn = playTurn;
 
