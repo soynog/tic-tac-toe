@@ -9,6 +9,9 @@ $(() => {
   console.log(theGame);
 
   // Add click event handlers
+  $('#hide').click(function() {
+    $('#game-board').toggleClass("hide");
+  });
   $('#buttons').click(function(event) {
     if($(event.target).is("button")) {
       theGame.playTurn($(event.target).attr('id'));

@@ -20,7 +20,11 @@ h1 {
   width: 240px;
 }
 
-button {
+.hide {
+  display:none;
+}
+
+#buttons button {
   height: 60px;
   line-height: 60px;
   width: 60px;
