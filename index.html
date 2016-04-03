@@ -13,7 +13,6 @@
         <h1>tic tac toe</h1>
       </div>
     </header>
-    <button id="hide">TOGGLE HIDE</button>
     <div id="game-board" class="hide">
       <div id="buttons">
         <div class="row" id="rowA">
@@ -35,6 +34,23 @@
       <div class="announce">
         Player X's Turn
       </div>
+      <form id="sign-out">
+        <fieldset>
+          <legend>Sign out!</legend>
+          <input type="submit" name="submit" value="Sign Out">
+        </fieldset>
+      </form>
+    </div>
+    <div id="game-picker">
+      GAME PICKER
+      <form id="new-game">
+        <fieldset>
+          <legend>New Game</legend>
+          <input type="text" name="credentials[email]" value="" placeholder="player 'o' sign in">
+          <input type="password" name="credentials[password]" value="" placeholder="password">
+          <input type="submit" name="submit" value="Start Game">
+        </fieldset>
+      </form>
       <form id="sign-out">
         <fieldset>
           <legend>Sign out!</legend>
