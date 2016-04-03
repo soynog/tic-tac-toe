@@ -3,6 +3,11 @@ h1 {
   font-size: 26pt;
 }
 
+fieldset {
+  margin: 20px 0;
+  width: 240px;
+}
+
 .row {
   text-align: center;
   width: 240px;
