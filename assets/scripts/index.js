@@ -10,7 +10,9 @@ $(() => {
 
   // Add click event handlers
   $('#buttons').click(function(event) {
-    theGame.playTurn($(event.target).attr('id'));
+    if($(event.target).is("button")) {
+      theGame.playTurn($(event.target).attr('id'));
+    }
   });
 
   // $("#ind-0").click(function() {

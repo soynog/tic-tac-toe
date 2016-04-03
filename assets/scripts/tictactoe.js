@@ -6,27 +6,29 @@ const Game = function (playerO, playerX) {
   this.playerX = playerX;
   this.playerO = playerO;
   this.over = false;
-  this.turn = 'x';
+  this.turn = 'X';
 };
 
 // Game.prototype place function: adds an o or x to an index. First checks to make sure position is empty. Returns true if successful, false if not.
 const place = function (index, player) {
   if (!this.cells[index]) {
     this.cells[index] = player;
+    $('button#' + index).text(player);
     return true;
   }
   return false;
 };
 
 // Returns an array of index triplets of rows that include the passed index.
-const rowsThruInd = function(index) {
-  const triplets = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-  return triplets.filter(trip => trip.some(x => x === index));
+const rows = function(index) {
+  console.log("Rows running");
+  let triplets = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  return triplets.filter(trip => trip.some(x => x === Number(index)));
 };
 
 // Game.prototype check win: checks if there are three in a row including the passed index. If there's a winner, return their symbol. If not, return false.
 const checkWin = function (index) {
-  let triplets = rowsThruInd(index);
+  let triplets = rows(index);
   for (let i in triplets) {
     let c = this.cells;
     let t = triplets[i];
@@ -53,7 +55,7 @@ const playTurn = function(index) {
         $('.announce').text("Game Over! It's a tie.");
         this.over = true;
       } else {
-        this.turn = this.turn === 'x' ? 'o' : 'x';
+        this.turn = this.turn === 'X' ? 'O' : 'X';
         $('.announce').text("Player " + this.turn + "'s turn.");
         // Next turn
       }
