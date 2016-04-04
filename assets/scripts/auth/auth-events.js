@@ -25,7 +25,7 @@ const signInHandlers = () => {
   $('#new-game').on('submit', function (event) {
     let userOdata = getFormFields(this);
     event.preventDefault();
-    authApi.newGame(authUi.newGameSuccess, authUi.failure, userOdata);
+    authApi.newGame(authUi.newGameSuccess, authUi.signInSuccess, authUi.addToGameSuccess, authUi.failure, userOdata);
   });
 };
 

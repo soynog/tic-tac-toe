@@ -1,7 +1,6 @@
 'use strict';
 
 const app = require('../app-data');
-const authUi = require('./ui');
 
 const signUp = (success, failure, data) => {
   $.ajax({
@@ -12,12 +11,13 @@ const signUp = (success, failure, data) => {
   .fail(failure);
 };
 
-const signIn = (success, failure, data) => {
+// Sign in an existing user. If a game ID is passed, also patch that user into the game as player O.
+const signIn = (success, failure, data, success2) => {
   $.ajax({
     method: 'POST',
     url: app.api + '/sign-in',
     data,
-  }).done(success)
+  }).done(success,success2)
   .fail(failure);
 };
 
@@ -33,9 +33,8 @@ const signOut = (success, failure) => {
   .fail(failure);
 };
 
-// Create a new game. Once done, add user O to game.
-const newGame = (success, failure, userOdata) => {
-  console.log("Signing in user O");
+// Create a new game
+const createGame = (success, failure) => {
   $.ajax({
     method: 'POST',
     url: app.api + '/games',
@@ -44,9 +43,39 @@ const newGame = (success, failure, userOdata) => {
     }
   }).done(success)
   .fail(failure);
-  // signIn(authUi.success, authUi.failure, userOdata);
-
 };
+
+// Add user O to new game
+const addToGame = (success,failure) => {
+  console.log("Add to Game called");
+  console.log(app);
+  console.log(app.game);
+  $.ajax({
+    method: 'PATCH',
+    url: app.api + '/games/' + app.game.id,
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    }
+  }).done(success)
+  .fail(failure);
+};
+
+// Create a new game, sign in user O, and add user O to game.
+const newGame = (success1, success2, success3, failure, userOdata) => {
+  $.ajax({
+    method: 'POST',
+    url: app.api + '/games',
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    }
+  }).done(success1,
+          signIn(success2,failure,userOdata,
+            addToGame(success3,failure)))
+  .fail(failure);
+  // addToGame(success,failure,app.game.id);
+};
+
+//signIn(success,failure,userOdata,true)
 
 module.exports = {
   signUp,
