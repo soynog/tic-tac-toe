@@ -2,30 +2,29 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" href="assets/styles/main.css"/>
     <script src="vendor.bundle.js" type="text/javascript" charset="utf-8" defer></script>
     <script src="bundle.js" type="text/javascript" charset="utf-8" defer></script>
     <title>Tic Tac Toe</title>
   </head>
   <body>
     <header>
-      <div class="row">
+      <div class="ttt-row">
         <h1>tic tac toe</h1>
       </div>
     </header>
-    <div id="game-board" class="hide">
-      <div id="buttons">
-        <div class="row" id="rowA">
+    <div class="game-board">
+      <div class="buttons">
+        <div class="ttt-row" id="rowA">
           <button id="0"></button>
           <button id="1"></button>
           <button id="2"></button>
         </div>
-        <div class="row" id="rowB">
+        <div class="ttt-row" id="rowB">
           <button id="3"></button>
           <button id="4"></button>
           <button id="5"></button>
         </div>
-        <div class="row" id="rowC">
+        <div class="ttt-row" id="rowC">
           <button id="6"></button>
           <button id="7"></button>
           <button id="8"></button>
@@ -34,32 +33,45 @@
       <div class="announce">
         Player X's Turn
       </div>
-      <form id="sign-out">
+      <form class="sign-out">
         <fieldset>
           <legend>Sign out!</legend>
           <input type="submit" name="submit" value="Sign Out">
         </fieldset>
       </form>
     </div>
-    <div id="game-picker">
+    <div class="game-picker">
       GAME PICKER
-      <form id="new-game">
+      <form class="create-game">
         <fieldset>
           <legend>New Game</legend>
-          <input type="text" name="credentials[email]" value="" placeholder="player 'o' sign in">
-          <input type="password" name="credentials[password]" value="" placeholder="password">
-          <input type="submit" name="submit" value="Start Game">
+          <input type="submit" name="submit" value="Create Game">
         </fieldset>
       </form>
-      <form id="sign-out">
+      <form class="sign-in">
+        <fieldset>
+          <legend>Sign in Player O</legend>
+          <input type="text" name="credentials[email]" value="" placeholder="player 'o' sign in">
+          <input type="password" name="credentials[password]" value="" placeholder="password">
+          <input type="submit" name="submit" value="Sign in Player O">
+        </fieldset>
+      </form>
+      <form class="add-player-o">
+        <fieldset>
+          <legend>Add Player O to Game</legend>
+          <input type="submit" name="submit" value="Add Player O">
+        </fieldset>
+      </form>
+      <form class="sign-out">
         <fieldset>
           <legend>Sign out!</legend>
           <input type="submit" name="submit" value="Sign Out">
         </fieldset>
       </form>
     </div>
-    <div id="login-screen">
-      <form id="sign-up">
+    <div class="login-screen">
+      LOG IN
+      <form class="sign-up">
         <fieldset>
           <legend>New User</legend>
           <input type="text" name="credentials[email]" value="" placeholder="email">
@@ -68,7 +80,7 @@
           <input type="submit" name="submit" value="Sign Up">
         </fieldset>
       </form>
-      <form id="sign-in">
+      <form class="sign-in">
         <fieldset>
           <legend>Sign In</legend>
           <input type="text" name="credentials[email]" value="" placeholder="email">
@@ -77,5 +89,6 @@
         </fieldset>
       </form>
     </div>
+    <button class="show-state">Show State</button>
   </body>
 </html>

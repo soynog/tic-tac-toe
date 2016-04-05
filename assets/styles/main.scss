@@ -1,0 +1,43 @@
+h1 {
+  font-family: monospace;
+  font-size: 26pt;
+}
+
+fieldset {
+  margin: 20px 0;
+  width: 240px;
+}
+
+.ttt-row {
+  clear: both;
+  font-size: 24pt;
+  position: relative;
+  text-align: center;
+  width: 240px;
+}
+
+.announce {
+  clear: both;
+  font-family: monospace;
+  font-size: 20px;
+  margin: 100px 0 10px;
+  text-align: center;
+  width: 240px;
+}
+
+.hide {
+  display: none;
+}
+
+button {
+  float: left;
+  font-family: "Century Gothic", sans-serif;
+  font-size: 40pt;
+  font-weight: bold;
+  height: 60px;
+  line-height: 60px;
+  margin: 10px;
+  padding: 0;
+  text-align: center;
+  width: 60px;
+}

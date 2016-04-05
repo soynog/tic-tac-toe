@@ -1,7 +1,6 @@
 'use strict';
 
 const app = require('../app-data');
-const gameEvents = require('../game/game-events');
 
 const signInSuccess = (data) => {
   if (app.user) {
@@ -10,6 +9,7 @@ const signInSuccess = (data) => {
     app.user = data.user;
   }
   console.log(data.user.email + " signed in successfully.");
+  console.log(app);
 };
 
 const signOutSuccess = () => {
@@ -20,22 +20,25 @@ const signOutSuccess = () => {
   console.log(app);
 };
 
-const newGameSuccess = (data) => {
+const createGameSuccess = (data) => {
   console.log(data);
-  console.log(app);
   if (data.game) {
     app.game = data.game;
   }
+  console.log(app);
 };
 
-const addToGameSuccess = (data) => {
-  console.log("Added to Game?");
+const addPlayerOSuccess = (data) => {
+  if (data.game) {
+    app.game = data.game;
+  }
   console.log(data);
   console.log(app);
 };
 
 const success = (data) => {
   console.log(data);
+  console.log(app);
 };
 
 const failure = (error) => {
@@ -47,6 +50,6 @@ module.exports = {
   success,
   signOutSuccess,
   signInSuccess,
-  newGameSuccess,
-  addToGameSuccess,
+  createGameSuccess,
+  addPlayerOSuccess,
 };
