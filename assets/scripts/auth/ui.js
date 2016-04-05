@@ -48,7 +48,7 @@ const createGameSuccess = (data) => {
   app.game = data.game;
   console.log(app);
   display.hideAll();
-  display.showSections('.sign-in','.sign-out','.announce');
+  display.showSections('.sign-in.player-o','.sign-out','.announce');
 };
 
 // If signout is successful, redraws display and clears app data.
@@ -59,8 +59,9 @@ const signOutSuccess = () => {
   console.log("User signed out successfully.");
   console.log(app);
   display.hideAll();
-  display.showSections('.sign-in','.sign-up');
+  display.showSections('.sign-in.player-x','.sign-up');
   display.announce('');
+  display.clearBoard();
 };
 
 // If game is updated successful to end it, check endgame type and update app data and display as appropriate.

@@ -5,7 +5,8 @@ const sections = [
   '.game-board',
   '.announce',
   '.sign-up',
-  '.sign-in',
+  '.sign-in.player-x',
+  '.sign-in.player-o',
   '.create-game',
   '.sign-out'
 ];
@@ -37,9 +38,16 @@ const updateBoard = function(cells) {
   }
 };
 
+// Clears the board.
+const clearBoard = function() {
+  console.log("Clearing Board");
+  $('.buttons button').text("");
+};
+
 module.exports = {
   hideAll,
   showSections,
   announce,
   updateBoard,
+  clearBoard,
 };
