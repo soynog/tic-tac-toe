@@ -1,8 +1,18 @@
 'use strict';
 
-const Game = require('../game/tictactoe.js');
+const ttt = require('../game/tictactoe.js');
 const app = require('../app-data');
 const display = require('../display');
+const authApi = require('./api');
+
+const success = (data) => {
+  console.log(data);
+  console.log(app);
+};
+
+const failure = (error) => {
+  console.error(error);
+};
 
 const signInSuccess = (data) => {
   if (app.user) {
@@ -19,11 +29,7 @@ const signInSuccess = (data) => {
 
 const createGameSuccess = (data) => {
   console.log(data);
-  if (data.game) {
-    let theGame = new Game();
-    app.theGame = theGame;
-    app.game = data.game;
-  }
+  app.game = data.game;
   console.log(app);
   display.hideAll();
   display.showSections('.sign-in','.sign-out','.announce');
@@ -37,6 +43,7 @@ const signOutSuccess = () => {
   console.log(app);
   display.hideAll();
   display.showSections('.sign-in','.sign-up');
+  display.announce('');
 };
 
 const addPlayerOSuccess = (data) => {
@@ -45,25 +52,32 @@ const addPlayerOSuccess = (data) => {
   }
   display.hideAll();
   display.showSections('.game-board','.announce','.sign-out');
+  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
   console.log(data);
   console.log(app);
+};
+
+const endGameSuccess = (data) => {
+  // app.game.cells = data.game.cells;
+  app.game.over = data.game.over;
+  if(ttt.checkWin(app.game)) {
+    let winner = ttt.checkWin(app.game);
+    display.announce('Congratulations, Player ' + winner + '! You Win!');
+  } else if (ttt.checkFull(app.game)) {
+    display.announce('A tie. Womp.');
+  }
 };
 
 const playSuccess = (data) => {
   console.log("Play PATCH success!");
   console.log(data);
   app.game.cells = data.game.cells;
-  app.game.over = data.game.over;
   console.log(app);
-};
-
-const success = (data) => {
-  console.log(data);
-  console.log(app);
-};
-
-const failure = (error) => {
-  console.error(error);
+  display.updateBoard(app.game.cells);
+  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
+  if(ttt.checkWin(app.game) || ttt.checkFull(app.game)) {
+    authApi.updateGame(endGameSuccess, failure, null, null, true);
+  }
 };
 
 module.exports = {

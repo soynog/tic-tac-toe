@@ -26,7 +26,20 @@ const showSections = function() {
   }
 };
 
+const announce = function(msg) {
+  $('.announce').text(msg);
+};
+
+const updateBoard = function(cells) {
+  console.log("Update Board");
+  for (let i in cells) {
+    $('button#' + i).text(cells[i].toUpperCase());
+  }
+};
+
 module.exports = {
   hideAll,
   showSections,
+  announce,
+  updateBoard,
 };

@@ -5,6 +5,7 @@ const getFormFields = require('../../lib/get-form-fields');
 const authApi = require('./auth/api');
 const authUi = require('./auth/ui');
 const app = require('./app-data');
+const ttt = require('./game/tictactoe');
 
 const signInHandlers = () => {
   $('form.sign-up').on('submit', function (event) {
@@ -41,9 +42,11 @@ const gameHandlers = () => {
     if($(event.target).is("button")) {
       event.preventDefault();
       let index = $(event.target).attr('id');
-      let player = app.theGame.turn.toLowerCase();
-      app.theGame.playTurn(index);
-      authApi.updateGame(authUi.playSuccess, authUi.failure, index, player, false);
+      // let player = app.theGame.turn.toLowerCase();
+      // app.theGame.playTurn(index);
+      if(!app.game.over && ttt.validMove(app.game,index)) {
+        authApi.updateGame(authUi.playSuccess,authUi.failure, index, ttt.turn(app.game), false);
+      }
     }
   });
 };

@@ -1,6 +1,7 @@
 'use strict';
 
 const app = require('../app-data');
+const display = require('../display');
 
 // Sign up a new user.
 const signUp = (success, failure, data) => {
@@ -21,7 +22,7 @@ const signIn = (success, failure, data) => {
   console.log("Signing In");
   if (data) {
     if (app.user && data.credentials.email === app.user.email) {
-      console.log(app.user.email + " is already signed in!");
+      display.announce(app.user.email + " is already signed in!");
     } else {
       $.ajax({
         method: 'POST',
@@ -84,11 +85,7 @@ const addPlayerO = (success,failure) => {
 
 // Updates the gamestate
 const updateGame = (success,failure,index,player,gameOver) => {
-
   console.log("updateGame");
-  // console.log(index);
-  // console.log(player);
-  // console.log(gameOver);
 
   let data = {
     game: {
@@ -98,7 +95,7 @@ const updateGame = (success,failure,index,player,gameOver) => {
 
   if (index && player) {
     data.game.cell.index = index;
-    data.game.cell.value = player.toLowerCase();
+    data.game.cell.value = player;
   }
 
   if (gameOver) {
