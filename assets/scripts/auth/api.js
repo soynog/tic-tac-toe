@@ -20,12 +20,16 @@ const signUp = (success, failure, data) => {
 const signIn = (success, failure, data) => {
   console.log("Signing In");
   if (data) {
-    $.ajax({
-      method: 'POST',
-      url: app.api + '/sign-in',
-      data,
-    }).done(success)
-    .fail(failure);
+    if (app.user && data.credentials.email === app.user.email) {
+      console.log(app.user.email + " is already signed in!");
+    } else {
+      $.ajax({
+        method: 'POST',
+        url: app.api + '/sign-in',
+        data,
+      }).done(success)
+      .fail(failure);
+    }
   } else {
     console.log("No data!");
   }

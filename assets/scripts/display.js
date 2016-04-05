@@ -3,6 +3,7 @@
 // Array holds selectors for the various sections of the app.
 const sections = [
   '.game-board',
+  '.announce',
   '.sign-up',
   '.sign-in',
   '.create-game',

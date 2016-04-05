@@ -23,7 +23,7 @@ const createGameSuccess = (data) => {
   }
   console.log(app);
   display.hideAll();
-  display.showSections('.sign-in','.sign-out');
+  display.showSections('.sign-in','.sign-out','.announce');
 };
 
 const signOutSuccess = () => {
@@ -41,7 +41,7 @@ const addPlayerOSuccess = (data) => {
     app.game = data.game;
   }
   display.hideAll();
-  display.showSections('.game-board','.sign-out');
+  display.showSections('.game-board','.announce','.sign-out');
   console.log(data);
   console.log(app);
 };
