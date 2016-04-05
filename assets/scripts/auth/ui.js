@@ -1,22 +1,18 @@
 'use strict';
 
 const app = require('../app-data');
+const display = require('../display');
 
 const signInSuccess = (data) => {
   if (app.user) {
     app.user2 = data.user;
+    display.hideAll();
+    display.showSections('.add-player-o','.sign-out');
   } else {
     app.user = data.user;
+    display.hideAll();
+    display.showSections('.create-game','.sign-out');
   }
-  console.log(data.user.email + " signed in successfully.");
-  console.log(app);
-};
-
-const signOutSuccess = () => {
-  app.user = null;
-  app.user2 = null;
-  app.game = null;
-  console.log("User signed out successfully.");
   console.log(app);
 };
 
@@ -26,12 +22,26 @@ const createGameSuccess = (data) => {
     app.game = data.game;
   }
   console.log(app);
+  display.hideAll();
+  display.showSections('.sign-in','.sign-out');
+};
+
+const signOutSuccess = () => {
+  app.user = null;
+  app.user2 = null;
+  app.game = null;
+  console.log("User signed out successfully.");
+  console.log(app);
+  display.hideAll();
+  display.showSections('.sign-in','.sign-up');
 };
 
 const addPlayerOSuccess = (data) => {
   if (data.game) {
     app.game = data.game;
   }
+  display.hideAll();
+  display.showSections('.game-board','.sign-out');
   console.log(data);
   console.log(app);
 };

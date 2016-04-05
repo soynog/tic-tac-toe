@@ -14,6 +14,7 @@ const signUp = (success, failure, data) => {
 
 // Sign in an existing user.
 const signIn = (success, failure, data) => {
+  console.log("Signing In");
   $.ajax({
     method: 'POST',
     url: app.api + '/sign-in',

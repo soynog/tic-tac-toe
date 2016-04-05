@@ -6,7 +6,7 @@ const authApi = require('./api');
 const authUi = require('./ui');
 
 const signInHandlers = () => {
-  $('.sign-up').on('submit', function (event) {
+  $('form.sign-up').on('submit', function (event) {
     let data = getFormFields(this);
     event.preventDefault();
     console.log(data);

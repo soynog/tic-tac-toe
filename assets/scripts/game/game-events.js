@@ -4,7 +4,7 @@ const Game = require('./tictactoe.js');
 let theGame = new Game();
 
 const gameHandlers = () => {
-  $('#buttons').click(function(event) {
+  $('.game-board').click(function(event) {
     if($(event.target).is("button")) {
       theGame.playTurn($(event.target).attr('id'));
     }

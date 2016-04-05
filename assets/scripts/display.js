@@ -1,28 +1,31 @@
 'use strict';
 
+// Array holds selectors for the various sections of the app.
+const sections = [
+  '.game-board',
+  '.sign-up',
+  '.sign-in',
+  '.create-game',
+  '.sign-in-o',
+  '.add-player-o',
+  '.sign-out'
+];
+
+// Hide all sections.
+const hideAll = function() {
+  for (let i in sections) {
+    $(sections[i]).addClass('hide');
+  }
+};
+
 // Displays Sign In and Sign Up Screen
-const loginScreen = function() {
-  $('#login-screen').removeClass('hide');
-  $('#game-board').addClass('hide');
-  $('#game-picker').addClass('hide');
-};
-
-// Displays New or Existing Game Menu
-const gamePicker = function() {
-  $('#login-screen').addClass('hide');
-  $('#game-board').addClass('hide');
-  $('#game-picker').removeClass('hide');
-};
-
-// Displays Game Play Menu
-const gameBoard = function() {
-  $('#login-screen').addClass('hide');
-  $('#game-board').addClass('hide');
-  $('#game-picker').removeClass('hide');
+const showSections = function() {
+  for (let i in arguments) {
+    $(arguments[i]).removeClass('hide');
+  }
 };
 
 module.exports = {
-  loginScreen,
-  gamePicker,
-  gameBoard,
+  hideAll,
+  showSections,
 };
