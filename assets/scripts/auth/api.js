@@ -82,22 +82,41 @@ const addPlayerO = (success,failure) => {
   }
 };
 
-// // Create a new game, sign in user O, and add user O to game.
-// const newGame = (success1, success2, success3, failure, userOdata) => {
-//   $.ajax({
-//     method: 'POST',
-//     url: app.api + '/games',
-//     headers: {
-//       Authorization: 'Token token=' + app.user.token,
-//     }
-//   }).done(success1,
-//           signIn(success2,failure,userOdata,
-//             addToGame(success3,failure)))
-//   .fail(failure);
-//   // addToGame(success,failure,app.game.id);
-// };
+// Updates the gamestate
+const updateGame = (success,failure,index,player,gameOver) => {
 
-//signIn(success,failure,userOdata,true)
+  console.log("updateGame");
+  // console.log(index);
+  // console.log(player);
+  // console.log(gameOver);
+
+  let data = {
+    game: {
+      cell: {}
+    }
+  };
+
+  if (index && player) {
+    data.game.cell.index = index;
+    data.game.cell.value = player.toLowerCase();
+  }
+
+  if (gameOver) {
+    data.game.over = gameOver;
+  }
+
+  console.log(data);
+
+  $.ajax({
+    method: 'PATCH',
+    url: app.api + '/games/' + app.game.id,
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    },
+    data
+  }).done(success)
+  .fail(failure);
+};
 
 module.exports = {
   signUp,
@@ -105,4 +124,5 @@ module.exports = {
   signOut,
   createGame,
   addPlayerO,
+  updateGame,
 };

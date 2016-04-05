@@ -1,9 +1,10 @@
 'use strict';
 
-const getFormFields = require('../../../lib/get-form-fields');
+const getFormFields = require('../../lib/get-form-fields');
 
-const authApi = require('./api');
-const authUi = require('./ui');
+const authApi = require('./auth/api');
+const authUi = require('./auth/ui');
+const app = require('./app-data');
 
 const signInHandlers = () => {
   $('form.sign-up').on('submit', function (event) {
@@ -35,13 +36,19 @@ const signInHandlers = () => {
   });
 };
 
-// const addHandlers = () => {
-//   $('#sign-out').on('submit', function (event) {
-//     event.preventDefault();
-//     authApi.signOut(authUi.signOutSuccess, authUi.failure);
-//   });
-// };
+const gameHandlers = () => {
+  $('.game-board').click(function(event) {
+    if($(event.target).is("button")) {
+      event.preventDefault();
+      let index = $(event.target).attr('id');
+      let player = app.theGame.turn.toLowerCase();
+      app.theGame.playTurn(index);
+      authApi.updateGame(authUi.playSuccess, authUi.failure, index, player, false);
+    }
+  });
+};
 
 module.exports = {
   signInHandlers,
+  gameHandlers,
 };

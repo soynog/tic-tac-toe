@@ -1,5 +1,6 @@
 'use strict';
 
+const Game = require('../game/tictactoe.js');
 const app = require('../app-data');
 const display = require('../display');
 
@@ -19,6 +20,8 @@ const signInSuccess = (data) => {
 const createGameSuccess = (data) => {
   console.log(data);
   if (data.game) {
+    let theGame = new Game();
+    app.theGame = theGame;
     app.game = data.game;
   }
   console.log(app);
@@ -46,6 +49,12 @@ const addPlayerOSuccess = (data) => {
   console.log(app);
 };
 
+const playSuccess = (data) => {
+  console.log("Play PATCH success!");
+  console.log(data);
+  console.log(app);
+};
+
 const success = (data) => {
   console.log(data);
   console.log(app);
@@ -62,4 +71,5 @@ module.exports = {
   signInSuccess,
   createGameSuccess,
   addPlayerOSuccess,
+  playSuccess,
 };

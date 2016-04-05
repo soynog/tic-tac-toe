@@ -1,14 +1,12 @@
 'use strict';
 
-const gameEvents = require('./game/game-events');
-const authEvents = require('./auth/auth-events');
+const events = require('./events');
 
 // On document ready
 $(() => {
   // Create Sign In Handlers
-  authEvents.signInHandlers();
+  events.signInHandlers();
 
   // Create Game Handlers
-  gameEvents.gameHandlers();
-  
+  events.gameHandlers();
 });

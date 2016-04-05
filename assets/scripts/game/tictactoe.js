@@ -21,7 +21,6 @@ const place = function (index, player) {
 
 // Returns an array of index triplets of rows that include the passed index.
 const rows = function(index) {
-  console.log("Rows running");
   let triplets = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   return triplets.filter(trip => trip.some(x => x === Number(index)));
 };
