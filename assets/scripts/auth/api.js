@@ -36,6 +36,7 @@ const signIn = (success, failure, data) => {
   }
 };
 
+// Sign out of current user.
 const signOut = (success, failure) => {
   if (app.user) {
     $.ajax({
@@ -51,7 +52,7 @@ const signOut = (success, failure) => {
   }
 };
 
-// Create a new game
+// Create a new game.
 const createGame = (success, failure) => {
   if (!app.game) {
     $.ajax({
@@ -67,7 +68,7 @@ const createGame = (success, failure) => {
   }
 };
 
-// Add user O to new game
+// Add player O to the new game.
 const addPlayerO = (success,failure) => {
   if (app.game && app.user2) {
     $.ajax({
@@ -83,7 +84,7 @@ const addPlayerO = (success,failure) => {
   }
 };
 
-// Updates the gamestate
+// Updates the gamestate based on a recent play.
 const updateGame = (success,failure,index,player,gameOver) => {
   console.log("updateGame");
 

@@ -5,15 +5,18 @@ const app = require('../app-data');
 const display = require('../display');
 const authApi = require('./api');
 
+// Generic AJAX request success function.
 const success = (data) => {
   console.log(data);
   console.log(app);
 };
 
+// Generic AJAX request failure function.
 const failure = (error) => {
   console.error(error);
 };
 
+// If Sign-In is successful, redraws display as appropriate.
 const signInSuccess = (data) => {
   if (app.user) {
     app.user2 = data.user;
@@ -27,6 +30,7 @@ const signInSuccess = (data) => {
   console.log(app);
 };
 
+// If game creation is successful, redraws display and updates app data with game info.
 const createGameSuccess = (data) => {
   console.log(data);
   app.game = data.game;
@@ -35,6 +39,7 @@ const createGameSuccess = (data) => {
   display.showSections('.sign-in','.sign-out','.announce');
 };
 
+// If signout is successful, redraws display and clears app data.
 const signOutSuccess = () => {
   app.user = null;
   app.user2 = null;
@@ -46,6 +51,7 @@ const signOutSuccess = () => {
   display.announce('');
 };
 
+// If adding a player is successful, redraws display and updates app data.
 const addPlayerOSuccess = (data) => {
   if (data.game) {
     app.game = data.game;
@@ -57,8 +63,8 @@ const addPlayerOSuccess = (data) => {
   console.log(app);
 };
 
+// If game is updated successful to end it, check endgame type and update app data and display as appropriate.
 const endGameSuccess = (data) => {
-  // app.game.cells = data.game.cells;
   app.game.over = data.game.over;
   if(ttt.checkWin(app.game)) {
     let winner = ttt.checkWin(app.game);
@@ -68,8 +74,8 @@ const endGameSuccess = (data) => {
   }
 };
 
+// If a play request is successful, update app data and redraw display as appropriate. Also, check if the play caused a win or a draw and if so update the game again.
 const playSuccess = (data) => {
-  console.log("Play PATCH success!");
   console.log(data);
   app.game.cells = data.game.cells;
   console.log(app);

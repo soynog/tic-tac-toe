@@ -7,7 +7,6 @@ const sections = [
   '.sign-up',
   '.sign-in',
   '.create-game',
-  '.sign-in-o',
   '.add-player-o',
   '.sign-out'
 ];
