@@ -16,12 +16,24 @@ const failure = (error) => {
   console.error(error);
 };
 
+// If adding a player is successful, redraws display and updates app data.
+const addPlayerOSuccess = (data) => {
+  if (data.game) {
+    app.game = data.game;
+  }
+  display.hideAll();
+  display.showSections('.game-board','.announce','.sign-out');
+  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
+  console.log(data);
+  console.log(app);
+};
+
 // If Sign-In is successful, redraws display as appropriate.
 const signInSuccess = (data) => {
   if (app.user) {
+    // If one player is already signed in, add second player to current game.
     app.user2 = data.user;
-    display.hideAll();
-    display.showSections('.add-player-o','.sign-out');
+    authApi.addPlayerO(addPlayerOSuccess, failure);
   } else {
     app.user = data.user;
     display.hideAll();
@@ -49,18 +61,6 @@ const signOutSuccess = () => {
   display.hideAll();
   display.showSections('.sign-in','.sign-up');
   display.announce('');
-};
-
-// If adding a player is successful, redraws display and updates app data.
-const addPlayerOSuccess = (data) => {
-  if (data.game) {
-    app.game = data.game;
-  }
-  display.hideAll();
-  display.showSections('.game-board','.announce','.sign-out');
-  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
-  console.log(data);
-  console.log(app);
 };
 
 // If game is updated successful to end it, check endgame type and update app data and display as appropriate.

@@ -34,12 +34,6 @@ const signInHandlers = () => {
     event.preventDefault();
     authApi.createGame(authUi.createGameSuccess, authUi.failure);
   });
-
-  // Add player O to a new game
-  $('.add-player-o').on('submit', function(event) {
-    event.preventDefault();
-    authApi.addPlayerO(authUi.addPlayerOSuccess, authUi.failure);
-  });
 };
 
 const gameHandlers = () => {
