@@ -27,7 +27,7 @@ const signInHandlers = () => {
   });
   $('.add-player-o').on('submit', function(event) {
     event.preventDefault();
-    authApi.addToGame(authUi.addPlayerOSuccess, authUi.failure);
+    authApi.addPlayerO(authUi.addPlayerOSuccess, authUi.failure);
   });
   $('.show-state').on('click', function(event) {
     event.preventDefault();
