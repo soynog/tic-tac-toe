@@ -52,6 +52,8 @@ const addPlayerOSuccess = (data) => {
 const playSuccess = (data) => {
   console.log("Play PATCH success!");
   console.log(data);
+  app.game.cells = data.game.cells;
+  app.game.over = data.game.over;
   console.log(app);
 };
 
