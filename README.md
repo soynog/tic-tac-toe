@@ -1,5 +1,5 @@
 WDI Project 1: TIC TAC TOE
-~~Nicolas Garcia~~
+Nicolas Garcia
 
 **Outline of App Structure**
 index.html:
