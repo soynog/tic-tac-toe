@@ -9,7 +9,7 @@ const ttt = require('./game/tictactoe');
 
 const signInHandlers = () => {
   // Create a new user
-  $('form.sign-up').on('submit', function (event) {
+  $('.sign-up').on('submit', function (event) {
     let data = getFormFields(this);
     event.preventDefault();
     console.log(data);
@@ -21,6 +21,13 @@ const signInHandlers = () => {
     let data = getFormFields(this);
     event.preventDefault();
     authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
+  });
+
+  // Return a list of all games
+  $('.prev-games').on('submit', function (event) {
+    event.preventDefault();
+    authApi.getGames(authUi.getGameCountSuccess,authUi.failure);
+    authApi.getGames(authUi.showGamesSuccess,authUi.failure,false);
   });
 
   // Sign out of current user

@@ -36,6 +36,19 @@ const signIn = (success, failure, data) => {
   }
 };
 
+// Get list of games played by user.
+const getGames = (success, failure, over) => {
+  let url = app.api + '/games' + (over !== undefined ? '/?over=' + String(over) : '');
+  $.ajax({
+    method: 'GET',
+    url,
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    }
+  }).done(success)
+  .fail(failure);
+};
+
 // Sign out of current user.
 const signOut = (success, failure) => {
   if (app.user) {
@@ -144,4 +157,5 @@ module.exports = {
   addPlayerO,
   updateGame,
   changePW,
+  getGames,
 };

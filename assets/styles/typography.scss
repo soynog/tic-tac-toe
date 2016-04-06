@@ -1,5 +1,6 @@
 $lg-font-size: 24pt;
 $md-font-size: 18pt;
+$sm-font-size: 12pt;
 $hd-font-family: monospace;
 $txt-font-family: sans-serif;
 $ttt-font-size: 40pt;
@@ -9,6 +10,12 @@ h1 {
   color: $dark;
   font-family: $hd-font-family;
   font-size: $lg-font-size;
+}
+
+p {
+  color: $dark;
+  font-family: $hd-font-family;
+  font-size: $sm-font-size;
 }
 
 legend {

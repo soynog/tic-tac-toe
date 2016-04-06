@@ -28,6 +28,16 @@ const addPlayerOSuccess = (data) => {
   console.log(app);
 };
 
+// If get games succeeds, print those on-going games in the previous games section.
+const showGamesSuccess = (data) => {
+  console.log(data.games);
+  display.addPrevGames(data.games);
+};
+
+const getGameCountSuccess = (data) => {
+  display.showGameCount(data.games.length);
+};
+
 // If Sign-In is successful, redraws display as appropriate.
 const signInSuccess = (data) => {
   if (app.user) {
@@ -37,8 +47,11 @@ const signInSuccess = (data) => {
   } else {
     app.user = data.user;
     display.hideAll();
-    display.announce('');
-    display.showSections('.create-game','.sign-out','.change-pw');
+    display.clearAll();
+    display.showSections('.create-game','.prev-games','.sign-out','.change-pw');
+    // Update prev games text with # of games played.
+    authApi.getGames(getGameCountSuccess,failure);
+    authApi.getGames(showGamesSuccess,failure);
   }
   console.log(app);
 };
@@ -65,9 +78,8 @@ const signOutSuccess = () => {
   console.log("User signed out successfully.");
   console.log(app);
   display.hideAll();
+  display.clearAll();
   display.showSections('.sign-in.player-x','.sign-up');
-  display.announce('');
-  display.clearBoard();
 };
 
 // If game is updated successful to end it, check endgame type and update app data and display as appropriate.
@@ -110,4 +122,6 @@ module.exports = {
   addPlayerOSuccess,
   playSuccess,
   changePWSuccess,
+  showGamesSuccess,
+  getGameCountSuccess,
 };

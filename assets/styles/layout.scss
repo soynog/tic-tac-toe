@@ -19,7 +19,7 @@ form {
 input {
   background-color: $light;
   border: 1px $mid solid;
-  margin: 5px;
+  margin: $ttt-margin;
 }
 
 .cont {
@@ -57,5 +57,17 @@ input {
       text-align: center;
       width: $ttt-sq-size;
     }
+  }
+}
+
+.prev-games .game-list {
+  clear: both;
+  text-align: center;
+
+  button {
+    background-color: $light;
+    border: 1px $mid solid;
+    padding: 5px 20px;
+    margin: $ttt-margin;
   }
 }
