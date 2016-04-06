@@ -20,6 +20,7 @@ const signUp = (success, failure, data) => {
 // Sign in an existing user.
 const signIn = (success, failure, data) => {
   console.log("Signing In");
+
   if (data) {
     if (app.user && data.credentials.email === app.user.email) {
       display.announce(app.user.email + " is already signed in!");
@@ -34,6 +35,31 @@ const signIn = (success, failure, data) => {
   } else {
     console.log("No data!");
   }
+};
+
+// Get list of games played by user.
+const getGames = (success, failure, over) => {
+  let url = app.api + '/games' + (over !== undefined ? '/?over=' + String(over) : '');
+  $.ajax({
+    method: 'GET',
+    url,
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    }
+  }).done(success)
+  .fail(failure);
+};
+
+// Get a game based on its ID.
+const getGame = (success, failure, id) => {
+  $.ajax({
+    method: 'GET',
+    url: app.api + '/games/' + id,
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    }
+  }).done(success)
+  .fail(failure);
 };
 
 // Sign out of current user.
@@ -144,4 +170,6 @@ module.exports = {
   addPlayerO,
   updateGame,
   changePW,
+  getGames,
+  getGame,
 };

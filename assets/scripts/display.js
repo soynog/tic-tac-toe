@@ -9,7 +9,8 @@ const sections = [
   '.sign-in.player-o',
   '.create-game',
   '.sign-out',
-  '.change-pw'
+  '.change-pw',
+  '.prev-games',
 ];
 
 // Hide all sections.
@@ -45,10 +46,38 @@ const clearBoard = function() {
   $('.buttons button').text("");
 };
 
+// Shows # games played in Previous Games section
+const showGameCount = function(n) {
+  $('.game-count').text( n ? "Games Played: " + n : "" );
+};
+
+// Clears the board and all text fields.
+const clearAll = function() {
+  clearBoard();
+  announce('');
+  showGameCount('');
+};
+
+// Adds buttons for each of the unfinished games.
+const addPrevGames = function(games) {
+  $('#game-list-header').text("Incomplete Games:");
+  for (let i in games) {
+    let game = document.createElement("button");
+    let dispText = document.createTextNode(games[i].id);
+    let insertAt = document.getElementById('insert-here');
+    let parentDiv = document.getElementById('game-list');
+    game.appendChild(dispText);
+    parentDiv.insertBefore(game,insertAt);
+  }
+};
+
 module.exports = {
   hideAll,
   showSections,
   announce,
   updateBoard,
   clearBoard,
+  showGameCount,
+  clearAll,
+  addPrevGames,
 };
