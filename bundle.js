@@ -54,10 +54,11 @@ webpackJsonp([0],[
 	var authUi = __webpack_require__(8);
 	var app = __webpack_require__(6);
 	var ttt = __webpack_require__(9);
+	var display = __webpack_require__(7);
 
 	var signInHandlers = function signInHandlers() {
 	  // Create a new user
-	  $('form.sign-up').on('submit', function (event) {
+	  $('.sign-up').on('submit', function (event) {
 	    var data = getFormFields(this);
 	    event.preventDefault();
 	    console.log(data);
@@ -68,7 +69,15 @@ webpackJsonp([0],[
 	  $('.sign-in').on('submit', function (event) {
 	    var data = getFormFields(this);
 	    event.preventDefault();
-	    authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
+	    if (app.game) {
+	      if (data.credentials.email === app.game.player_o.email) {
+	        authApi.signIn(authUi.addPlayerOSuccess, authUi.signInFail, data);
+	      } else {
+	        display.announce("Please sign in as " + app.game.player_o.email + ".");
+	      }
+	    } else {
+	      authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
+	    }
 	  });
 
 	  // Sign out of current user
@@ -81,6 +90,17 @@ webpackJsonp([0],[
 	  $('.create-game').on('submit', function (event) {
 	    event.preventDefault();
 	    authApi.createGame(authUi.createGameSuccess, authUi.failure);
+	  });
+
+	  // Open an incomplete gameHandlers
+	  $('.prev-games').click(function (event) {
+	    event.preventDefault();
+	    if ($(event.target).is("button")) {
+	      var gameId = $(event.target).text();
+	      // Login player O
+
+	      authApi.getGame(authUi.openGameSuccess, authUi.failure, gameId);
+	    }
 	  });
 
 	  // Change User Password
@@ -200,6 +220,7 @@ webpackJsonp([0],[
 	// Sign in an existing user.
 	var signIn = function signIn(success, failure, data) {
 	  console.log("Signing In");
+
 	  if (data) {
 	    if (app.user && data.credentials.email === app.user.email) {
 	      display.announce(app.user.email + " is already signed in!");
@@ -213,6 +234,29 @@ webpackJsonp([0],[
 	  } else {
 	    console.log("No data!");
 	  }
+	};
+
+	// Get list of games played by user.
+	var getGames = function getGames(success, failure, over) {
+	  var url = app.api + '/games' + (over !== undefined ? '/?over=' + String(over) : '');
+	  $.ajax({
+	    method: 'GET',
+	    url: url,
+	    headers: {
+	      Authorization: 'Token token=' + app.user.token
+	    }
+	  }).done(success).fail(failure);
+	};
+
+	// Get a game based on its ID.
+	var getGame = function getGame(success, failure, id) {
+	  $.ajax({
+	    method: 'GET',
+	    url: app.api + '/games/' + id,
+	    headers: {
+	      Authorization: 'Token token=' + app.user.token
+	    }
+	  }).done(success).fail(failure);
 	};
 
 	// Sign out of current user.
@@ -317,7 +361,9 @@ webpackJsonp([0],[
 	  createGame: createGame,
 	  addPlayerO: addPlayerO,
 	  updateGame: updateGame,
-	  changePW: changePW
+	  changePW: changePW,
+	  getGames: getGames,
+	  getGame: getGame
 	};
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
@@ -341,7 +387,7 @@ webpackJsonp([0],[
 
 	// Array holds selectors for the various sections of the app.
 
-	var sections = ['.game-board', '.announce', '.sign-up', '.sign-in.player-x', '.sign-in.player-o', '.create-game', '.sign-out', '.change-pw'];
+	var sections = ['.game-board', '.announce', '.sign-up', '.sign-in.player-x', '.sign-in.player-o', '.create-game', '.sign-out', '.change-pw', '.prev-games'];
 
 	// Hide all sections.
 	var hideAll = function hideAll() {
@@ -376,12 +422,40 @@ webpackJsonp([0],[
 	  $('.buttons button').text("");
 	};
 
+	// Shows # games played in Previous Games section
+	var showGameCount = function showGameCount(n) {
+	  $('.game-count').text(n ? "Games Played: " + n : "");
+	};
+
+	// Clears the board and all text fields.
+	var clearAll = function clearAll() {
+	  clearBoard();
+	  announce('');
+	  showGameCount('');
+	};
+
+	// Adds buttons for each of the unfinished games.
+	var addPrevGames = function addPrevGames(games) {
+	  $('#game-list-header').text("Incomplete Games:");
+	  for (var i in games) {
+	    var game = document.createElement("button");
+	    var dispText = document.createTextNode(games[i].id);
+	    var insertAt = document.getElementById('insert-here');
+	    var parentDiv = document.getElementById('game-list');
+	    game.appendChild(dispText);
+	    parentDiv.insertBefore(game, insertAt);
+	  }
+	};
+
 	module.exports = {
 	  hideAll: hideAll,
 	  showSections: showSections,
 	  announce: announce,
 	  updateBoard: updateBoard,
-	  clearBoard: clearBoard
+	  clearBoard: clearBoard,
+	  showGameCount: showGameCount,
+	  clearAll: clearAll,
+	  addPrevGames: addPrevGames
 	};
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
@@ -414,9 +488,31 @@ webpackJsonp([0],[
 	  }
 	  display.hideAll();
 	  display.showSections('.game-board', '.announce', '.sign-out');
+	  display.updateBoard(app.game.cells);
 	  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
 	  console.log(data);
 	  console.log(app);
+	};
+
+	// If get games succeeds, print those on-going games in the previous games section.
+	var showGamesSuccess = function showGamesSuccess(data) {
+	  console.log(data.games);
+	  display.addPrevGames(data.games);
+	};
+
+	var getGameCountSuccess = function getGameCountSuccess(data) {
+	  display.showGameCount(data.games.length);
+	};
+
+	// If game successfully opens, update game data to match retreived game, and show game board.
+	var openGameSuccess = function openGameSuccess(data) {
+	  console.log(data);
+	  app.game = data.game;
+	  console.log(app);
+	  display.hideAll();
+	  display.showSections('.sign-in.player-o', '.sign-out', '.announce');
+	  // display.hideAll();
+	  // display.showSections('.game-board','.announce','.sign-out');
 	};
 
 	// If Sign-In is successful, redraws display as appropriate.
@@ -428,8 +524,11 @@ webpackJsonp([0],[
 	  } else {
 	    app.user = data.user;
 	    display.hideAll();
-	    display.announce('');
-	    display.showSections('.create-game', '.sign-out', '.change-pw');
+	    display.clearAll();
+	    display.showSections('.create-game', '.prev-games', '.sign-out', '.change-pw');
+	    // Update prev games text with # of games played.
+	    authApi.getGames(getGameCountSuccess, failure);
+	    authApi.getGames(showGamesSuccess, failure, false);
 	  }
 	  console.log(app);
 	};
@@ -456,9 +555,8 @@ webpackJsonp([0],[
 	  console.log("User signed out successfully.");
 	  console.log(app);
 	  display.hideAll();
+	  display.clearAll();
 	  display.showSections('.sign-in.player-x', '.sign-up');
-	  display.announce('');
-	  display.clearBoard();
 	};
 
 	// If game is updated successful to end it, check endgame type and update app data and display as appropriate.
@@ -500,7 +598,10 @@ webpackJsonp([0],[
 	  createGameSuccess: createGameSuccess,
 	  addPlayerOSuccess: addPlayerOSuccess,
 	  playSuccess: playSuccess,
-	  changePWSuccess: changePWSuccess
+	  changePWSuccess: changePWSuccess,
+	  showGamesSuccess: showGamesSuccess,
+	  getGameCountSuccess: getGameCountSuccess,
+	  openGameSuccess: openGameSuccess
 	};
 
 /***/ },
@@ -618,7 +719,7 @@ webpackJsonp([0],[
 
 
 	// module
-	exports.push([module.id, "header {\n  text-align: center; }\n\nbody {\n  background-color: #fcfcfa; }\n\nform {\n  clear: both;\n  margin: 20px auto; }\n\ninput {\n  background-color: #eee;\n  border: 1px #ddd solid;\n  margin: 5px; }\n\n.cont {\n  clear: both;\n  margin: 0 auto;\n  width: 240px; }\n\n.announce {\n  clear: both;\n  text-align: center;\n  width: 240px; }\n\n.hide {\n  display: none; }\n\n.game-board {\n  margin: 0 0 260px; }\n  .game-board .ttt-row {\n    margin: 0 auto;\n    width: 210px; }\n    .game-board .ttt-row button {\n      background-color: #eee;\n      border: 1px #ddd solid;\n      float: left;\n      height: 60px;\n      line-height: 60px;\n      margin: 5px;\n      padding: 0;\n      text-align: center;\n      width: 60px; }\n\nh1 {\n  color: #333;\n  font-family: monospace;\n  font-size: 24pt; }\n\nlegend {\n  font-family: sans-serif; }\n\n.announce {\n  font-family: sans-serif;\n  font-size: 18pt; }\n\n.game-board button {\n  font-family: \"Century Gothic\", sans-serif;\n  font-size: 40pt;\n  font-weight: bold;\n  text-align: center; }\n", ""]);
+	exports.push([module.id, "header {\n  text-align: center; }\n\nbody {\n  background-color: #fcfcfa; }\n\nform {\n  clear: both;\n  margin: 20px auto; }\n\ninput {\n  background-color: #eee;\n  border: 1px #ddd solid;\n  margin: 5px; }\n\n.cont {\n  clear: both;\n  margin: 0 auto;\n  width: 240px; }\n\n.announce {\n  clear: both;\n  text-align: center;\n  width: 240px; }\n\n.hide {\n  display: none; }\n\n.game-board {\n  margin: 0 0 260px; }\n  .game-board .ttt-row {\n    margin: 0 auto;\n    width: 210px; }\n    .game-board .ttt-row button {\n      background-color: #eee;\n      border: 1px #ddd solid;\n      float: left;\n      height: 60px;\n      line-height: 60px;\n      margin: 5px;\n      padding: 0;\n      text-align: center;\n      width: 60px; }\n\n.prev-games .game-list {\n  clear: both;\n  text-align: center; }\n  .prev-games .game-list button {\n    background-color: #eee;\n    border: 1px #ddd solid;\n    margin: 5px;\n    padding: 5px 20px; }\n\nh1 {\n  color: #333;\n  font-family: monospace;\n  font-size: 24pt; }\n\np {\n  color: #333;\n  font-family: monospace;\n  font-size: 12pt; }\n\nlegend {\n  font-family: sans-serif; }\n\n.announce {\n  font-family: sans-serif;\n  font-size: 18pt; }\n\n.game-board button {\n  font-family: \"Century Gothic\", sans-serif;\n  font-size: 40pt;\n  font-weight: bold;\n  text-align: center; }\n\n.prev-games p {\n  font-family: sans-serif; }\n", ""]);
 
 	// exports
 
