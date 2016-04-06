@@ -23,6 +23,7 @@ const addPlayerOSuccess = (data) => {
   }
   display.hideAll();
   display.showSections('.game-board','.announce','.sign-out');
+  display.updateBoard(app.game.cells);
   display.announce("Player " + ttt.turn(app.game) + "'s turn.");
   console.log(data);
   console.log(app);
@@ -44,9 +45,9 @@ const openGameSuccess = (data) => {
   app.game = data.game;
   console.log(app);
   display.hideAll();
-  display.showSections('.game-board','.announce','.sign-out');
-  display.updateBoard(app.game.cells);
-  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
+  display.showSections('.sign-in.player-o','.sign-out','.announce');
+  // display.hideAll();
+  // display.showSections('.game-board','.announce','.sign-out');
 };
 
 // If Sign-In is successful, redraws display as appropriate.

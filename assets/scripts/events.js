@@ -6,6 +6,7 @@ const authApi = require('./auth/api');
 const authUi = require('./auth/ui');
 const app = require('./app-data');
 const ttt = require('./game/tictactoe');
+const display = require('./display');
 
 const signInHandlers = () => {
   // Create a new user
@@ -20,7 +21,15 @@ const signInHandlers = () => {
   $('.sign-in').on('submit', function (event) {
     let data = getFormFields(this);
     event.preventDefault();
-    authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
+    if (app.game) {
+      if (data.credentials.email === app.game.player_o.email) {
+        authApi.signIn(authUi.addPlayerOSuccess, authUi.signInFail, data);
+      } else {
+        display.announce("Please sign in as " + app.game.player_o.email + ".");
+      }
+    } else {
+      authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
+    }
   });
 
   // Sign out of current user
@@ -40,9 +49,10 @@ const signInHandlers = () => {
     event.preventDefault();
     if($(event.target).is("button")) {
       let gameId = $(event.target).text();
+      // Login player O
+
       authApi.getGame(authUi.openGameSuccess, authUi.failure, gameId);
 
-      // Login player O
     }
   });
 

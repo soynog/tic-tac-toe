@@ -20,6 +20,7 @@ const signUp = (success, failure, data) => {
 // Sign in an existing user.
 const signIn = (success, failure, data) => {
   console.log("Signing In");
+
   if (data) {
     if (app.user && data.credentials.email === app.user.email) {
       display.announce(app.user.email + " is already signed in!");
