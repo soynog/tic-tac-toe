@@ -37,7 +37,7 @@ const signInSuccess = (data) => {
   } else {
     app.user = data.user;
     display.hideAll();
-    display.showSections('.create-game','.sign-out');
+    display.showSections('.create-game','.sign-out','.change-pw');
   }
   console.log(app);
 };
@@ -87,6 +87,13 @@ const playSuccess = (data) => {
   }
 };
 
+// If a password change request is successful, return to game picker screen.
+const changePWSuccess = () => {
+  console.log("Change Password Success!");
+  display.hideAll();
+  display.showSections('.create-game','.sign-out','.change-pw');
+};
+
 module.exports = {
   failure,
   success,
@@ -95,4 +102,5 @@ module.exports = {
   createGameSuccess,
   addPlayerOSuccess,
   playSuccess,
+  changePWSuccess,
 };

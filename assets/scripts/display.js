@@ -8,7 +8,8 @@ const sections = [
   '.sign-in.player-x',
   '.sign-in.player-o',
   '.create-game',
-  '.sign-out'
+  '.sign-out',
+  '.change-pw'
 ];
 
 // Hide all sections.

@@ -116,6 +116,26 @@ const updateGame = (success,failure,index,player,gameOver) => {
   .fail(failure);
 };
 
+const changePW = (success, failure, formData) => {
+  let data = {
+    passwords: {}
+  };
+  if (formData.passwords) {
+    data.passwords.new = formData.passwords.new;
+    data.passwords.old = formData.passwords.old;
+  }
+  console.log(data);
+  $.ajax({
+    method: 'PATCH',
+    url: app.api + '/change-password/' + app.user.id,
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    },
+    data
+  }).done(success)
+  .fail(failure);
+};
+
 module.exports = {
   signUp,
   signIn,
@@ -123,4 +143,5 @@ module.exports = {
   createGame,
   addPlayerO,
   updateGame,
+  changePW,
 };

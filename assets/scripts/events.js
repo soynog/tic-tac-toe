@@ -34,6 +34,13 @@ const signInHandlers = () => {
     event.preventDefault();
     authApi.createGame(authUi.createGameSuccess, authUi.failure);
   });
+
+  // Change User Password
+  $('.change-pw').on('submit', function (event) {
+    let data = getFormFields(this);
+    event.preventDefault();
+    authApi.changePW(authUi.changePWSuccess, authUi.failure, data);
+  });
 };
 
 const gameHandlers = () => {
