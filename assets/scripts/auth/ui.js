@@ -37,9 +37,15 @@ const signInSuccess = (data) => {
   } else {
     app.user = data.user;
     display.hideAll();
+    display.announce('');
     display.showSections('.create-game','.sign-out','.change-pw');
   }
   console.log(app);
+};
+
+// If Sign-In Fails, tell user to enter a valid username and password.
+const signInFail = () => {
+  display.announce("Please enter a valid username and password.");
 };
 
 // If game creation is successful, redraws display and updates app data with game info.
@@ -99,6 +105,7 @@ module.exports = {
   success,
   signOutSuccess,
   signInSuccess,
+  signInFail,
   createGameSuccess,
   addPlayerOSuccess,
   playSuccess,

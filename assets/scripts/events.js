@@ -20,7 +20,7 @@ const signInHandlers = () => {
   $('.sign-in').on('submit', function (event) {
     let data = getFormFields(this);
     event.preventDefault();
-    authApi.signIn(authUi.signInSuccess, authUi.failure, data);
+    authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
   });
 
   // Sign out of current user
