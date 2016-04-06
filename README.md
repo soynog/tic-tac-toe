@@ -34,3 +34,6 @@ assets/styles:
 
 curl:
   These curl scripts were used in development to test communication with the API.
+
+scoping:
+  This folder contains wire-frame drawings and user stories created in the scoping stage of app development.
