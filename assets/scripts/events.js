@@ -23,13 +23,6 @@ const signInHandlers = () => {
     authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
   });
 
-  // Return a list of all games
-  $('.prev-games').on('submit', function (event) {
-    event.preventDefault();
-    authApi.getGames(authUi.getGameCountSuccess,authUi.failure);
-    authApi.getGames(authUi.showGamesSuccess,authUi.failure,false);
-  });
-
   // Sign out of current user
   $('.sign-out').on('submit', function (event) {
     event.preventDefault();
@@ -40,6 +33,17 @@ const signInHandlers = () => {
   $('.create-game').on('submit', function (event) {
     event.preventDefault();
     authApi.createGame(authUi.createGameSuccess, authUi.failure);
+  });
+
+  // Open an incomplete gameHandlers
+  $('.prev-games').click(function(event) {
+    event.preventDefault();
+    if($(event.target).is("button")) {
+      let gameId = $(event.target).text();
+      authApi.getGame(authUi.openGameSuccess, authUi.failure, gameId);
+
+      // Login player O
+    }
   });
 
   // Change User Password

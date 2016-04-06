@@ -38,6 +38,17 @@ const getGameCountSuccess = (data) => {
   display.showGameCount(data.games.length);
 };
 
+// If game successfully opens, update game data to match retreived game, and show game board.
+const openGameSuccess = (data) => {
+  console.log(data);
+  app.game = data.game;
+  console.log(app);
+  display.hideAll();
+  display.showSections('.game-board','.announce','.sign-out');
+  display.updateBoard(app.game.cells);
+  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
+};
+
 // If Sign-In is successful, redraws display as appropriate.
 const signInSuccess = (data) => {
   if (app.user) {
@@ -51,7 +62,7 @@ const signInSuccess = (data) => {
     display.showSections('.create-game','.prev-games','.sign-out','.change-pw');
     // Update prev games text with # of games played.
     authApi.getGames(getGameCountSuccess,failure);
-    authApi.getGames(showGamesSuccess,failure);
+    authApi.getGames(showGamesSuccess,failure,false);
   }
   console.log(app);
 };
@@ -124,4 +135,5 @@ module.exports = {
   changePWSuccess,
   showGamesSuccess,
   getGameCountSuccess,
+  openGameSuccess,
 };

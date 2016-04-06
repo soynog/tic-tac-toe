@@ -49,6 +49,18 @@ const getGames = (success, failure, over) => {
   .fail(failure);
 };
 
+// Get a game based on its ID.
+const getGame = (success, failure, id) => {
+  $.ajax({
+    method: 'GET',
+    url: app.api + '/games/' + id,
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    }
+  }).done(success)
+  .fail(failure);
+};
+
 // Sign out of current user.
 const signOut = (success, failure) => {
   if (app.user) {
@@ -158,4 +170,5 @@ module.exports = {
   updateGame,
   changePW,
   getGames,
+  getGame,
 };
