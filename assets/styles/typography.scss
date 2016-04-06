@@ -1,0 +1,30 @@
+$lg-font-size: 24pt;
+$md-font-size: 18pt;
+$hd-font-family: monospace;
+$txt-font-family: sans-serif;
+$ttt-font-size: 40pt;
+$ttt-font-family: 'Century Gothic';
+
+h1 {
+  color: $dark;
+  font-family: $hd-font-family;
+  font-size: $lg-font-size;
+}
+
+legend {
+  font-family: $txt-font-family;
+}
+
+.announce {
+  font-family: $txt-font-family;
+  font-size: $md-font-size;
+}
+
+.game-board {
+  button {
+    font-family: $ttt-font-family, sans-serif;
+    font-size: $ttt-font-size;
+    font-weight: bold;
+    text-align: center;
+  }
+}

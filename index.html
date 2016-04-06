@@ -7,69 +7,70 @@
     <title>Tic Tac Toe</title>
   </head>
   <body>
-    <header>
-      <div class="ttt-row">
-        <h1>tic tac toe</h1>
+    <div class="cont">
+      <header>
+        <div class="ttt-row">
+          <h1>tic tac toe</h1>
+        </div>
+      </header>
+      <div class="game-board">
+        <div class="buttons">
+          <div class="ttt-row" id="rowA">
+            <button id="0"></button>
+            <button id="1"></button>
+            <button id="2"></button>
+          </div>
+          <div class="ttt-row" id="rowB">
+            <button id="3"></button>
+            <button id="4"></button>
+            <button id="5"></button>
+          </div>
+          <div class="ttt-row" id="rowC">
+            <button id="6"></button>
+            <button id="7"></button>
+            <button id="8"></button>
+          </div>
+        </div>
       </div>
-    </header>
-    <div class="game-board hide">
-      <div class="buttons">
-        <div class="ttt-row" id="rowA">
-          <button id="0"></button>
-          <button id="1"></button>
-          <button id="2"></button>
-        </div>
-        <div class="ttt-row" id="rowB">
-          <button id="3"></button>
-          <button id="4"></button>
-          <button id="5"></button>
-        </div>
-        <div class="ttt-row" id="rowC">
-          <button id="6"></button>
-          <button id="7"></button>
-          <button id="8"></button>
-        </div>
+      <form class="create-game hide">
+        <fieldset>
+          <legend>New Game</legend>
+          <input type="submit" name="submit" value="Create Game">
+        </fieldset>
+      </form>
+      <form class="sign-in player-x">
+        <fieldset>
+          <legend>Player X Sign In</legend>
+          <input type="text" name="credentials[email]" value="" placeholder="email">
+          <input type="password" name="credentials[password]" value="" placeholder="password">
+          <input type="submit" name="submit" value="Sign In">
+        </fieldset>
+      </form>
+      <form class="sign-in player-o hide">
+        <fieldset>
+          <legend>Player O Sign In</legend>
+          <input type="text" name="credentials[email]" value="" placeholder="email">
+          <input type="password" name="credentials[password]" value="" placeholder="password">
+          <input type="submit" name="submit" value="Sign In">
+        </fieldset>
+      </form>
+      <form class="sign-up">
+        <fieldset>
+          <legend>New User</legend>
+          <input type="text" name="credentials[email]" value="" placeholder="email">
+          <input type="password" name="credentials[password]" value="" placeholder="password">
+          <input type="password" name="credentials[password_confirmation]" value="" placeholder="confirm password">
+          <input type="submit" name="submit" value="Sign Up">
+        </fieldset>
+      </form>
+      <div class="announce hide">
       </div>
+      <form class="sign-out hide">
+        <fieldset>
+          <legend>Sign out</legend>
+          <input type="submit" name="submit" value="Sign Out">
+        </fieldset>
+      </form>
     </div>
-    <form class="create-game hide">
-      <fieldset>
-        <legend>New Game</legend>
-        <input type="submit" name="submit" value="Create Game">
-      </fieldset>
-    </form>
-    <form class="sign-in player-x">
-      <fieldset>
-        <legend>Player X Sign In</legend>
-        <input type="text" name="credentials[email]" value="" placeholder="email">
-        <input type="password" name="credentials[password]" value="" placeholder="password">
-        <input type="submit" name="submit" value="Sign In">
-      </fieldset>
-    </form>
-    <form class="sign-in player-o hide">
-      <fieldset>
-        <legend>Player O Sign In</legend>
-        <input type="text" name="credentials[email]" value="" placeholder="email">
-        <input type="password" name="credentials[password]" value="" placeholder="password">
-        <input type="submit" name="submit" value="Sign In">
-      </fieldset>
-    </form>
-    <form class="sign-up">
-      <fieldset>
-        <legend>New User</legend>
-        <input type="text" name="credentials[email]" value="" placeholder="email">
-        <input type="password" name="credentials[password]" value="" placeholder="password">
-        <input type="password" name="credentials[password_confirmation]" value="" placeholder="confirm password">
-        <input type="submit" name="submit" value="Sign Up">
-      </fieldset>
-    </form>
-    <div class="announce hide">
-    </div>
-    <form class="sign-out hide">
-      <fieldset>
-        <legend>Sign out</legend>
-        <input type="submit" name="submit" value="Sign Out">
-      </fieldset>
-    </form>
-    <!--<button class="show-state">Show State</button>-->
   </body>
 </html>

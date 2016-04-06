@@ -1,0 +1,61 @@
+$app-width: 240px;
+$ttt-sq-size: 60px;
+$ttt-margin: 5px;
+
+
+header {
+  text-align: center;
+}
+
+body {
+  background-color: $off-white;
+}
+
+form {
+  clear: both;
+  margin: 20px auto;
+}
+
+input {
+  background-color: $light;
+  border: 1px $mid solid;
+  margin: 5px;
+}
+
+.cont {
+  clear: both;
+  margin: 0 auto;
+  width: $app-width;
+}
+
+.announce {
+  clear: both;
+  // margin: 100px 0 10px;
+  text-align: center;
+  width: $app-width;
+}
+
+.hide {
+  display: none;
+}
+
+.game-board {
+  margin: 0 0 260px;
+
+  .ttt-row {
+    margin: 0 auto;
+    width: ($ttt-sq-size + $ttt-margin * 2) * 3;
+
+    button {
+      background-color: $light;
+      border: 1px $mid solid;
+      float: left;
+      height: $ttt-sq-size;
+      line-height: $ttt-sq-size;
+      margin: $ttt-margin;
+      padding: 0;
+      text-align: center;
+      width: $ttt-sq-size;
+    }
+  }
+}
