@@ -32,19 +32,25 @@ const openGameSuccess = (data) => {
 
 // If User 1 Sign-In is successful, update app-data and go to Picker Screen.
 const signInSuccess_user1 = (data) => {
-  app.user = data.user;
+  app.localUsers.push(data.user);
+  console.log("Pushing User 1");
+  console.log(app);
   flow.pickerScreen();
 };
 
 // If User 2 Sign-In is successful, update app-data and add Player O.
 const signInSuccess_user2_add = (data) => {
-  app.user2 = data.user;
+  app.localUsers.push(data.user);
+  console.log("Pushing User 2");
+  console.log(app);
   api.addPlayerO(addPlayerOSuccess, failure);
 };
 
 // If User 2 Sign-In is successful, update app-data only.
 const signInSuccess_user2 = (data) => {
-  app.user2 = data.user;
+  app.localUsers.push(data.user);
+  console.log("Pushing User 2");
+  console.log(app);
   flow.gameScreen();
 };
 

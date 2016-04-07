@@ -2,17 +2,17 @@
 
 const app = {
   api: 'http://tic-tac-toe.wdibos.com',
-  hotseat: null, // Set to true if it's a hotseat game, false if it's an online game.
-  userLetter: null,
+  localUsers: [], // Push users to this as they sign in.
+  game: null,
   clearGame: () => {
-    app.user2 = null;
     app.game = null;
-    app.hotseat = null;
-    app.userLetter = null;
+    if (app.localUsers.length > 1) {
+      app.localUsers[1] = null;
+    }
   },
   signOut: () => {
-    app.user = null;
     app.clearGame();
+    app.localUsers = [];
   },
   getPlayerEmail: (letter) => {
     if (letter === 'x' && app.game && app.game.player_x) {

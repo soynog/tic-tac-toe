@@ -35,12 +35,13 @@ const signIn = function(success, failure, data) {
 
 // Get list of games played by user.
 const getGames = function(success, failure, over) {
+  console.log(app);
   let url = app.api + '/games' + (over !== undefined ? '/?over=' + String(over) : '');
   $.ajax({
     method: 'GET',
     url,
     headers: {
-      Authorization: 'Token token=' + app.user.token,
+      Authorization: 'Token token=' + app.localUsers[0].token,
     }
   }).done(success)
   .fail(failure);
@@ -52,7 +53,7 @@ const getGame = function(success, failure, id) {
     method: 'GET',
     url: app.api + '/games/' + id,
     headers: {
-      Authorization: 'Token token=' + app.user.token,
+      Authorization: 'Token token=' + app.localUsers[0].token,
     }
   }).done(success)
   .fail(failure);
@@ -64,9 +65,9 @@ const signOut = function(success, failure) {
   if (app.user) {
     $.ajax({
       method: 'DELETE',
-      url: app.api + '/sign-out/' + app.user.id,
+      url: app.api + '/sign-out/' + app.localUsers[0].id,
       headers: {
-        Authorization: 'Token token=' + app.user.token,
+        Authorization: 'Token token=' + app.localUsers[0].token,
       }
     }).done(success)
     .fail(failure);
@@ -82,7 +83,7 @@ const createGame = function(success, failure) {
     method: 'POST',
     url: app.api + '/games',
     headers: {
-      Authorization: 'Token token=' + app.user.token,
+      Authorization: 'Token token=' + app.localUsers[0].token,
     }
   }).done(success)
   .fail(failure);
@@ -94,7 +95,7 @@ const addPlayerO = function(success,failure,id,token) {
     method: 'PATCH',
     url: app.api + '/games/' + (id || app.game.id),
     headers: {
-      Authorization: 'Token token=' + (token || app.user2.token),
+      Authorization: 'Token token=' + (token || app.localUsers[1].token),
     }
   }).done(success)
   .fail(failure);
@@ -123,7 +124,7 @@ const updateGame = function(success,failure,index,player,gameOver) {
     method: 'PATCH',
     url: app.api + '/games/' + app.game.id,
     headers: {
-      Authorization: 'Token token=' + app.user.token,
+      Authorization: 'Token token=' + app.localUsers[0].token,
     },
     data
   }).done(success)
@@ -141,9 +142,9 @@ const changePW = function(success, failure, formData) {
   }
   $.ajax({
     method: 'PATCH',
-    url: app.api + '/change-password/' + app.user.id,
+    url: app.api + '/change-password/' + app.localUsers[0].id,
     headers: {
-      Authorization: 'Token token=' + app.user.token,
+      Authorization: 'Token token=' + app.localUsers[0].token,
     },
     data
   }).done(success)
@@ -151,7 +152,7 @@ const changePW = function(success, failure, formData) {
 };
 
 const joinGame = function(success,failure,id) {
-  let token = app.user.token;
+  let token = app.localUsers[0].token;
   console.log("In JoinGame function. Calling addPlayerO with " + id + " and " + token + ".");
   addPlayerO(success,failure,id,token);
 };

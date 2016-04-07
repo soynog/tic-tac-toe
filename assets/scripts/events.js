@@ -92,7 +92,11 @@ const gameHandlers = () => {
       event.preventDefault();
       let index = $(event.target).attr('id');
       let playTurn = ttt.turn(app.game);
-      if(!app.game.over && ttt.validMove(app.game,index)) {
+
+      // Before Updating: Check if game is live, the current player is signed in on this computer, and the move is valid.
+      if( !app.game.over &&
+          ttt.turn(app.game) &&
+          ttt.validMove(app.game,index)) {
         api.updateGame(ui.playSuccess,ui.failure, index, playTurn, false);
       }
     }

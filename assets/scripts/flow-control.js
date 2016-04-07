@@ -81,8 +81,8 @@ const gameRefresh = function() {
 // Game Screen Display
 const gameScreen = function() {
   disp.hideAll();
-  app.hotseat = !!app.user2; // Check if it's a hotseat game by seeing if there's a user2 .
-  app.userLetter = app.game.player_o.email === app.user.email ? 'o' : 'x'; // Check which letter the primary user is.
+  // app.localUsers.push() = !!app.user2; // Check if it's a hotseat game by seeing if there's a user2 .
+  // app.userLetter = app.game.player_o.email === app.user.email ? 'o' : 'x'; // Check which letter the primary user is.
   gameRefresh();
   console.log(app);
   disp.showSections('.game-board','.announce','.back-to-picker','.sign-out');

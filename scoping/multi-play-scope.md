@@ -10,6 +10,7 @@ add on change and on error functions
     prevent game updates while it's not your turn
 HTML/CSS/structural changes:
   <!-- Join game online option -->
-  Option to wait for someone to join rather than logging in a second player from your comp.
+  Option to wait for someone to join rather than logging in a second
+  player from your comp.
   <!-- In game, Display game ID#, primary player name, and player letter -->
     <!-- getPlayer('o' or 'x') helper function returns email addy -->
