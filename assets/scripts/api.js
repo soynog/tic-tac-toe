@@ -1,10 +1,11 @@
 'use strict';
 
-const app = require('../app-data');
-const display = require('../display');
+const app = require('./app-data');
+// const display = require('../display');
 
 // Sign up a new user.
 const signUp = (success, failure, data) => {
+  console.log("Signing Up");
   if (data) {
     $.ajax({
       method: 'POST',
@@ -20,18 +21,13 @@ const signUp = (success, failure, data) => {
 // Sign in an existing user.
 const signIn = (success, failure, data) => {
   console.log("Signing In");
-
   if (data) {
-    if (app.user && data.credentials.email === app.user.email) {
-      display.announce(app.user.email + " is already signed in!");
-    } else {
       $.ajax({
         method: 'POST',
         url: app.api + '/sign-in',
         data,
       }).done(success)
       .fail(failure);
-    }
   } else {
     console.log("No data!");
   }
@@ -64,6 +60,7 @@ const getGame = (success, failure, id) => {
 
 // Sign out of current user.
 const signOut = (success, failure) => {
+  console.log("Signing Out");
   if (app.user) {
     $.ajax({
       method: 'DELETE',
@@ -80,6 +77,7 @@ const signOut = (success, failure) => {
 
 // Create a new game.
 const createGame = (success, failure) => {
+  console.log("Creating a new game");
   if (!app.game) {
     $.ajax({
       method: 'POST',
@@ -96,6 +94,7 @@ const createGame = (success, failure) => {
 
 // Add player O to the new game.
 const addPlayerO = (success,failure) => {
+  console.log("Adding player to game");
   if (app.game && app.user2) {
     $.ajax({
       method: 'PATCH',
@@ -112,7 +111,7 @@ const addPlayerO = (success,failure) => {
 
 // Updates the gamestate based on a recent play.
 const updateGame = (success,failure,index,player,gameOver) => {
-  console.log("updateGame");
+  console.log("Updating game");
 
   let data = {
     game: {
@@ -129,8 +128,6 @@ const updateGame = (success,failure,index,player,gameOver) => {
     data.game.over = gameOver;
   }
 
-  console.log(data);
-
   $.ajax({
     method: 'PATCH',
     url: app.api + '/games/' + app.game.id,
@@ -143,6 +140,7 @@ const updateGame = (success,failure,index,player,gameOver) => {
 };
 
 const changePW = (success, failure, formData) => {
+  console.log("Changing password");
   let data = {
     passwords: {}
   };
@@ -150,7 +148,6 @@ const changePW = (success, failure, formData) => {
     data.passwords.new = formData.passwords.new;
     data.passwords.old = formData.passwords.old;
   }
-  console.log(data);
   $.ajax({
     method: 'PATCH',
     url: app.api + '/change-password/' + app.user.id,
