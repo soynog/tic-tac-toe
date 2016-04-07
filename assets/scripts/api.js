@@ -4,7 +4,7 @@ const app = require('./app-data');
 // const display = require('../display');
 
 // Sign up a new user.
-const signUp = (success, failure, data) => {
+const signUp = function(success, failure, data) {
   console.log("Signing Up");
   if (data) {
     $.ajax({
@@ -19,7 +19,7 @@ const signUp = (success, failure, data) => {
 };
 
 // Sign in an existing user.
-const signIn = (success, failure, data) => {
+const signIn = function(success, failure, data) {
   console.log("Signing In");
   if (data) {
       $.ajax({
@@ -34,7 +34,7 @@ const signIn = (success, failure, data) => {
 };
 
 // Get list of games played by user.
-const getGames = (success, failure, over) => {
+const getGames = function(success, failure, over) {
   let url = app.api + '/games' + (over !== undefined ? '/?over=' + String(over) : '');
   $.ajax({
     method: 'GET',
@@ -47,7 +47,7 @@ const getGames = (success, failure, over) => {
 };
 
 // Get a game based on its ID.
-const getGame = (success, failure, id) => {
+const getGame = function(success, failure, id) {
   $.ajax({
     method: 'GET',
     url: app.api + '/games/' + id,
@@ -59,7 +59,7 @@ const getGame = (success, failure, id) => {
 };
 
 // Sign out of current user.
-const signOut = (success, failure) => {
+const signOut = function(success, failure) {
   console.log("Signing Out");
   if (app.user) {
     $.ajax({
@@ -76,7 +76,7 @@ const signOut = (success, failure) => {
 };
 
 // Create a new game.
-const createGame = (success, failure) => {
+const createGame = function(success, failure) {
   console.log("Creating a new game");
   $.ajax({
     method: 'POST',
@@ -89,19 +89,19 @@ const createGame = (success, failure) => {
 };
 
 // Add player O to the new game.
-const addPlayerO = (success,failure) => {
+const addPlayerO = function(success,failure,id,token) {
   $.ajax({
     method: 'PATCH',
-    url: app.api + '/games/' + app.game.id,
+    url: app.api + '/games/' + (id || app.game.id),
     headers: {
-      Authorization: 'Token token=' + app.user2.token,
+      Authorization: 'Token token=' + (token || app.user2.token),
     }
   }).done(success)
   .fail(failure);
 };
 
 // Updates the gamestate based on a recent play.
-const updateGame = (success,failure,index,player,gameOver) => {
+const updateGame = function(success,failure,index,player,gameOver) {
   console.log("Updating game");
 
   let data = {
@@ -130,7 +130,7 @@ const updateGame = (success,failure,index,player,gameOver) => {
   .fail(failure);
 };
 
-const changePW = (success, failure, formData) => {
+const changePW = function(success, failure, formData) {
   console.log("Changing password");
   let data = {
     passwords: {}
@@ -150,6 +150,12 @@ const changePW = (success, failure, formData) => {
   .fail(failure);
 };
 
+const joinGame = function(success,failure,id) {
+  let token = app.user.token;
+  console.log("In JoinGame function. Calling addPlayerO with " + id + " and " + token + ".");
+  addPlayerO(success,failure,id,token);
+};
+
 module.exports = {
   signUp,
   signIn,
@@ -160,4 +166,5 @@ module.exports = {
   changePW,
   getGames,
   getGame,
+  joinGame,
 };

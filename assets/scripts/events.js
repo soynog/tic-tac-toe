@@ -58,6 +58,7 @@ const signInHandlers = () => {
     event.preventDefault();
     let id = getFormFields(this).id;
     console.log(id);
+    api.joinGame(ui.addPlayerOSuccess,ui.failure,id);
   });
 
   // Open an incomplete gameHandlers
