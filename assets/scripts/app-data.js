@@ -2,12 +2,13 @@
 
 const app = {
   api: 'http://tic-tac-toe.wdibos.com',
-  clear: (total) => {
+  clearGame: () => {
     app.user2 = null;
     app.game = null;
-    if (total) {
-      app.user = null;
-    }
+  },
+  signOut: () => {
+    app.user = null;
+    app.clearGame();
   }
 };
 

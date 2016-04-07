@@ -1,7 +1,5 @@
 'use strict';
 
-const app = require('./app-data');
-
 // Array holds selectors for the various sections of the app.
 const sections = [
   '.sign-up',
@@ -55,9 +53,8 @@ const showGameCount = function(n) {
 };
 
 // Clears the board and all text fields, and resets game and user2 data. If passed true as a parameter, also clears User1 data.
-const clearAll = function(total) {
+const clearAll = function() {
   clearBoard();
-  app.clear(total);
   announce('');
   showGameCount('');
 };

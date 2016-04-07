@@ -78,35 +78,26 @@ const signOut = (success, failure) => {
 // Create a new game.
 const createGame = (success, failure) => {
   console.log("Creating a new game");
-  if (!app.game) {
-    $.ajax({
-      method: 'POST',
-      url: app.api + '/games',
-      headers: {
-        Authorization: 'Token token=' + app.user.token,
-      }
-    }).done(success)
-    .fail(failure);
-  } else {
-    console.log("Game already created!");
-  }
+  $.ajax({
+    method: 'POST',
+    url: app.api + '/games',
+    headers: {
+      Authorization: 'Token token=' + app.user.token,
+    }
+  }).done(success)
+  .fail(failure);
 };
 
 // Add player O to the new game.
 const addPlayerO = (success,failure) => {
-  console.log("Adding player to game");
-  if (app.game && app.user2) {
-    $.ajax({
-      method: 'PATCH',
-      url: app.api + '/games/' + app.game.id,
-      headers: {
-        Authorization: 'Token token=' + app.user2.token,
-      }
-    }).done(success)
-    .fail(failure);
-  } else {
-    console.log("Need a game and a second user to add!");
-  }
+  $.ajax({
+    method: 'PATCH',
+    url: app.api + '/games/' + app.game.id,
+    headers: {
+      Authorization: 'Token token=' + app.user2.token,
+    }
+  }).done(success)
+  .fail(failure);
 };
 
 // Updates the gamestate based on a recent play.

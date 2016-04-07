@@ -38,9 +38,15 @@ const signInSuccess_user1 = (data) => {
 };
 
 // If User 2 Sign-In is successful, update app-data and add Player O.
-const signInSuccess_user2 = (data) => {
+const signInSuccess_user2_add = (data) => {
   app.user2 = data.user;
   api.addPlayerO(addPlayerOSuccess, failure);
+};
+
+// If User 2 Sign-In is successful, update app-data only.
+const signInSuccess_user2 = (data) => {
+  app.user2 = data.user;
+  flow.gameScreen();
 };
 
 // If Sign-In Fails, tell user to enter a valid username and password.
@@ -74,9 +80,10 @@ const endGameSuccess = (data) => {
 const playSuccess = (data) => {
   app.game.cells = data.game.cells;
   disp.updateBoard(app.game.cells);
-  disp.announce("Player " + ttt.turn(app.game) + "'s turn.");
   if(ttt.checkWin(app.game) || ttt.checkFull(app.game)) {
     api.updateGame(endGameSuccess, failure, null, null, true);
+  } else {
+    disp.announce("Player " + ttt.turn(app.game) + "'s turn.");
   }
 };
 
@@ -92,6 +99,7 @@ module.exports = {
   signOutSuccess,
   signInSuccess_user1,
   signInSuccess_user2,
+  signInSuccess_user2_add,
   signInFail,
   createGameSuccess,
   addPlayerOSuccess,

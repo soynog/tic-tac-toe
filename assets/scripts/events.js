@@ -21,24 +21,20 @@ const signInHandlers = () => {
   $('.sign-in').on('submit', function (event) {
     event.preventDefault();
     let data = getFormFields(this);
-    if (app.user && data.credentials.email === app.user.email) {
-      // If User is already signed in, tell them that and do nothing.
-      disp.announce(app.user.email + " is already signed in!");
-    } else if (app.game) {
-      // If a game exists already...
-      if(app.game.player_o) {
-        //...and it already has a player O...
-        if (data.credentials.email === app.game.player_o.email) {
-          // ...and the user has entered in the right credentials for that player, sign in that player.
-          api.signIn(ui.addPlayerOSuccess, ui.signInFail, data);
-        }
-      } else {
-        // if there is game but no player O, sign the player in as player O.
-        api.signIn(ui.signInSuccess_user2, ui.signInFail, data);
-      }
-    } else {
-      // If no game exists already, sign the player in as primary player.
+    if (!app.game) {
+      // If no game exists yet, sign in user as primary user and go to picker screen.
       api.signIn(ui.signInSuccess_user1, ui.signInFail, data);
+    } else {
+      // If a game already exists, determine if a second player is still needed.
+      if (!app.game.player_o) {
+        // If the game only has one player, sign the user in as player O and add them to the game.
+        api.signIn(ui.signInSuccess_user2_add, ui.signInFail, data);
+      } else {
+        // If the game already has a player O, check to make sure the user signing in matches the correct user, and sign them in (without Adding to the game since they're already added).
+        if (data.credentials.email === app.game.player_o.email || data.credentials.email === app.game.player_x.email) {
+          api.signIn(ui.signInSuccess_user2, ui.signInFail, data);
+        }
+      }
     }
   });
 
@@ -51,7 +47,11 @@ const signInHandlers = () => {
   // Start a new game
   $('.create-game').on('submit', function (event) {
     event.preventDefault();
-    api.createGame(ui.createGameSuccess, ui.failure);
+    if(!app.game) {
+      api.createGame(ui.createGameSuccess, ui.failure);
+    } else {
+      console.log("Game already created!");
+    }
   });
 
   // Open an incomplete gameHandlers
@@ -84,8 +84,9 @@ const gameHandlers = () => {
     if($(event.target).is("button")) {
       event.preventDefault();
       let index = $(event.target).attr('id');
+      let playTurn = ttt.turn(app.game);
       if(!app.game.over && ttt.validMove(app.game,index)) {
-        api.updateGame(ui.playSuccess,ui.failure, index, ttt.turn(app.game), false);
+        api.updateGame(ui.playSuccess,ui.failure, index, playTurn, false);
       }
     }
   });
