@@ -44,10 +44,20 @@ const signInHandlers = () => {
   });
 
   // Start a new game
-  $('.create-game').on('submit', function (event) {
+  $('.create-hotseat').on('submit', function (event) {
     event.preventDefault();
     if(!app.game) {
-      api.createGame(ui.createGameSuccess, ui.failure);
+      api.createGame(ui.createHotseatSuccess, ui.failure);
+    } else {
+      console.log("Game already created!");
+    }
+  });
+
+  $('.create-remote').on('submit', function (event) {
+    event.preventDefault();
+    console.log("Creating Remote...");
+    if(!app.game) {
+      api.createGame(ui.createRemoteSuccess, ui.failure);
     } else {
       console.log("Game already created!");
     }

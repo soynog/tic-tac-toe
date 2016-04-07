@@ -60,9 +60,15 @@ const signInFail = () => {
 };
 
 // If game creation is successful, update app data and show signInUser2 Screen.
-const createGameSuccess = (data) => {
+const createHotseatSuccess = (data) => {
   app.game = data.game;
   flow.signInUser2();
+};
+
+// If game creation is successful, go directly to game screen.
+const createRemoteSuccess = (data) => {
+  app.game = data.game;
+  flow.gameScreen();
 };
 
 // If signout is successful, clear app data and go to Start Screen.
@@ -90,7 +96,8 @@ module.exports = {
   signInSuccess_user2,
   signInSuccess_user2_add,
   signInFail,
-  createGameSuccess,
+  createHotseatSuccess,
+  createRemoteSuccess,
   addPlayerOSuccess,
   playSuccess,
   changePWSuccess,

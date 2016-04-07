@@ -1,6 +1,6 @@
 <!-- download watcher file and add export module line -->
 <!-- join online game as player O -->
-differentiate somehow between online games vs. hotseat games
+<!-- differentiate somehow between online games vs. hotseat games -->
 create watcher object for that game
 add on change and on error functions
   for on change function, handle three different types of data

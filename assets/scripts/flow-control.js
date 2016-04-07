@@ -20,7 +20,7 @@ const pickerScreen = function() {
   disp.hideAll();
   disp.clearAll();
   app.clearGame();
-  disp.showSections('.create-game','.join-game','.prev-games','.change-pw','.sign-out');
+  disp.showSections('.create-hotseat','.create-remote','.join-game','.prev-games','.change-pw','.sign-out');
   api.getGames(
     data => disp.showGameCount(data.games.length),
     error => console.log(error));
