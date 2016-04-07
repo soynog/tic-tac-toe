@@ -16,10 +16,18 @@ form {
   margin: 20px auto;
 }
 
+// Style is overwritten for game buttons
+button,
 input {
   background-color: $light;
   border: 1px $mid solid;
   margin: $ttt-margin;
+  padding: 5px 20px;
+}
+
+input[type=text],
+input[type=password] {
+  background-color: $very-lt;
 }
 
 .cont {
@@ -63,11 +71,4 @@ input {
 .prev-games .game-list {
   clear: both;
   text-align: center;
-
-  button {
-    background-color: $light;
-    border: 1px $mid solid;
-    margin: $ttt-margin;
-    padding: 5px 20px;
-  }
 }
