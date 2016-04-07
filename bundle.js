@@ -13,15 +13,15 @@ webpackJsonp([0],[
 	__webpack_require__(1);
 
 	// styles
-	__webpack_require__(10);
+	__webpack_require__(11);
 
 	// attach jQuery globally
-	__webpack_require__(14);
 	__webpack_require__(15);
+	__webpack_require__(16);
 
 	// attach getFormFields globally
 
-	__webpack_require__(16);
+	__webpack_require__(17);
 
 /***/ },
 /* 1 */
@@ -30,9 +30,13 @@ webpackJsonp([0],[
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
 
 	var events = __webpack_require__(3);
+	var flow = __webpack_require__(10);
 
 	// On document ready
 	$(function () {
+	  // Show the start screen
+	  flow.startScreen();
+
 	  // Create Sign In Handlers
 	  events.signInHandlers();
 
@@ -50,46 +54,56 @@ webpackJsonp([0],[
 
 	var getFormFields = __webpack_require__(4);
 
-	var authApi = __webpack_require__(5);
-	var authUi = __webpack_require__(8);
+	var api = __webpack_require__(5);
+	var ui = __webpack_require__(7);
 	var app = __webpack_require__(6);
-	var ttt = __webpack_require__(9);
-	var display = __webpack_require__(7);
+	var ttt = __webpack_require__(8);
+	var disp = __webpack_require__(9);
+	var flow = __webpack_require__(10);
 
 	var signInHandlers = function signInHandlers() {
 	  // Create a new user
 	  $('.sign-up').on('submit', function (event) {
 	    var data = getFormFields(this);
 	    event.preventDefault();
-	    console.log(data);
-	    authApi.signUp(authUi.success, authUi.failure, data);
+	    api.signUp(ui.success, ui.failure, data);
 	  });
 
 	  // Sign in an existing user
 	  $('.sign-in').on('submit', function (event) {
-	    var data = getFormFields(this);
 	    event.preventDefault();
-	    if (app.game) {
-	      if (data.credentials.email === app.game.player_o.email) {
-	        authApi.signIn(authUi.addPlayerOSuccess, authUi.signInFail, data);
-	      } else {
-	        display.announce("Please sign in as " + app.game.player_o.email + ".");
-	      }
+	    var data = getFormFields(this);
+	    if (!app.game) {
+	      // If no game exists yet, sign in user as primary user and go to picker screen.
+	      api.signIn(ui.signInSuccess_user1, ui.signInFail, data);
 	    } else {
-	      authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
+	      // If a game already exists, determine if a second player is still needed.
+	      if (!app.game.player_o) {
+	        // If the game only has one player, sign the user in as player O and add them to the game.
+	        api.signIn(ui.signInSuccess_user2_add, ui.signInFail, data);
+	      } else {
+	        // If the game already has a player O, check to make sure the user signing in matches the correct user, and sign them in (without Adding to the game since they're already added).
+	        if (data.credentials.email === app.game.player_o.email || data.credentials.email === app.game.player_x.email) {
+	          api.signIn(ui.signInSuccess_user2, ui.signInFail, data);
+	        }
+	      }
 	    }
 	  });
 
 	  // Sign out of current user
 	  $('.sign-out').on('submit', function (event) {
 	    event.preventDefault();
-	    authApi.signOut(authUi.signOutSuccess, authUi.failure);
+	    api.signOut(ui.signOutSuccess, ui.failure);
 	  });
 
 	  // Start a new game
 	  $('.create-game').on('submit', function (event) {
 	    event.preventDefault();
-	    authApi.createGame(authUi.createGameSuccess, authUi.failure);
+	    if (!app.game) {
+	      api.createGame(ui.createGameSuccess, ui.failure);
+	    } else {
+	      console.log("Game already created!");
+	    }
 	  });
 
 	  // Open an incomplete gameHandlers
@@ -98,8 +112,7 @@ webpackJsonp([0],[
 	    if ($(event.target).is("button")) {
 	      var gameId = $(event.target).text();
 	      // Login player O
-
-	      authApi.getGame(authUi.openGameSuccess, authUi.failure, gameId);
+	      api.getGame(ui.openGameSuccess, ui.failure, gameId);
 	    }
 	  });
 
@@ -107,7 +120,13 @@ webpackJsonp([0],[
 	  $('.change-pw').on('submit', function (event) {
 	    var data = getFormFields(this);
 	    event.preventDefault();
-	    authApi.changePW(authUi.changePWSuccess, authUi.failure, data);
+	    api.changePW(ui.changePWSuccess, ui.failure, data);
+	  });
+
+	  // Back to game picker
+	  $('.back-to-picker').on('submit', function (event) {
+	    event.preventDefault();
+	    flow.pickerScreen();
 	  });
 	};
 
@@ -117,8 +136,9 @@ webpackJsonp([0],[
 	    if ($(event.target).is("button")) {
 	      event.preventDefault();
 	      var index = $(event.target).attr('id');
+	      var playTurn = ttt.turn(app.game);
 	      if (!app.game.over && ttt.validMove(app.game, index)) {
-	        authApi.updateGame(authUi.playSuccess, authUi.failure, index, ttt.turn(app.game), false);
+	        api.updateGame(ui.playSuccess, ui.failure, index, playTurn, false);
 	      }
 	    }
 	  });
@@ -202,10 +222,11 @@ webpackJsonp([0],[
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
 
 	var app = __webpack_require__(6);
-	var display = __webpack_require__(7);
+	// const display = require('../display');
 
 	// Sign up a new user.
 	var signUp = function signUp(success, failure, data) {
+	  console.log("Signing Up");
 	  if (data) {
 	    $.ajax({
 	      method: 'POST',
@@ -220,17 +241,12 @@ webpackJsonp([0],[
 	// Sign in an existing user.
 	var signIn = function signIn(success, failure, data) {
 	  console.log("Signing In");
-
 	  if (data) {
-	    if (app.user && data.credentials.email === app.user.email) {
-	      display.announce(app.user.email + " is already signed in!");
-	    } else {
-	      $.ajax({
-	        method: 'POST',
-	        url: app.api + '/sign-in',
-	        data: data
-	      }).done(success).fail(failure);
-	    }
+	    $.ajax({
+	      method: 'POST',
+	      url: app.api + '/sign-in',
+	      data: data
+	    }).done(success).fail(failure);
 	  } else {
 	    console.log("No data!");
 	  }
@@ -261,6 +277,7 @@ webpackJsonp([0],[
 
 	// Sign out of current user.
 	var signOut = function signOut(success, failure) {
+	  console.log("Signing Out");
 	  if (app.user) {
 	    $.ajax({
 	      method: 'DELETE',
@@ -276,37 +293,30 @@ webpackJsonp([0],[
 
 	// Create a new game.
 	var createGame = function createGame(success, failure) {
-	  if (!app.game) {
-	    $.ajax({
-	      method: 'POST',
-	      url: app.api + '/games',
-	      headers: {
-	        Authorization: 'Token token=' + app.user.token
-	      }
-	    }).done(success).fail(failure);
-	  } else {
-	    console.log("Game already created!");
-	  }
+	  console.log("Creating a new game");
+	  $.ajax({
+	    method: 'POST',
+	    url: app.api + '/games',
+	    headers: {
+	      Authorization: 'Token token=' + app.user.token
+	    }
+	  }).done(success).fail(failure);
 	};
 
 	// Add player O to the new game.
 	var addPlayerO = function addPlayerO(success, failure) {
-	  if (app.game && app.user2) {
-	    $.ajax({
-	      method: 'PATCH',
-	      url: app.api + '/games/' + app.game.id,
-	      headers: {
-	        Authorization: 'Token token=' + app.user2.token
-	      }
-	    }).done(success).fail(failure);
-	  } else {
-	    console.log("Need a game and a second user to add!");
-	  }
+	  $.ajax({
+	    method: 'PATCH',
+	    url: app.api + '/games/' + app.game.id,
+	    headers: {
+	      Authorization: 'Token token=' + app.user2.token
+	    }
+	  }).done(success).fail(failure);
 	};
 
 	// Updates the gamestate based on a recent play.
 	var updateGame = function updateGame(success, failure, index, player, gameOver) {
-	  console.log("updateGame");
+	  console.log("Updating game");
 
 	  var data = {
 	    game: {
@@ -323,8 +333,6 @@ webpackJsonp([0],[
 	    data.game.over = gameOver;
 	  }
 
-	  console.log(data);
-
 	  $.ajax({
 	    method: 'PATCH',
 	    url: app.api + '/games/' + app.game.id,
@@ -336,6 +344,7 @@ webpackJsonp([0],[
 	};
 
 	var changePW = function changePW(success, failure, formData) {
+	  console.log("Changing password");
 	  var data = {
 	    passwords: {}
 	  };
@@ -343,7 +352,6 @@ webpackJsonp([0],[
 	    data.passwords.new = formData.passwords.new;
 	    data.passwords.old = formData.passwords.old;
 	  }
-	  console.log(data);
 	  $.ajax({
 	    method: 'PATCH',
 	    url: app.api + '/change-password/' + app.user.id,
@@ -374,7 +382,15 @@ webpackJsonp([0],[
 	'use strict';
 
 	var app = {
-	  api: 'http://tic-tac-toe.wdibos.com'
+	  api: 'http://tic-tac-toe.wdibos.com',
+	  clearGame: function clearGame() {
+	    app.user2 = null;
+	    app.game = null;
+	  },
+	  signOut: function signOut() {
+	    app.user = null;
+	    app.clearGame();
+	  }
 	};
 
 	module.exports = app;
@@ -383,92 +399,13 @@ webpackJsonp([0],[
 /* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function($) {'use strict';
-
-	// Array holds selectors for the various sections of the app.
-
-	var sections = ['.game-board', '.announce', '.sign-up', '.sign-in.player-x', '.sign-in.player-o', '.create-game', '.sign-out', '.change-pw', '.prev-games'];
-
-	// Hide all sections.
-	var hideAll = function hideAll() {
-	  for (var i in sections) {
-	    $(sections[i]).addClass('hide');
-	  }
-	};
-
-	// Displays Sign In and Sign Up Screen
-	var showSections = function showSections() {
-	  for (var i in arguments) {
-	    $(arguments[i]).removeClass('hide');
-	  }
-	};
-
-	// Displays text in the announce field below the board.
-	var announce = function announce(msg) {
-	  $('.announce').text(msg);
-	};
-
-	// Updates the board based on the current game state.
-	var updateBoard = function updateBoard(cells) {
-	  console.log("Update Board");
-	  for (var i in cells) {
-	    $('button#' + i).text(cells[i].toUpperCase());
-	  }
-	};
-
-	// Clears the board.
-	var clearBoard = function clearBoard() {
-	  console.log("Clearing Board");
-	  $('.buttons button').text("");
-	};
-
-	// Shows # games played in Previous Games section
-	var showGameCount = function showGameCount(n) {
-	  $('.game-count').text(n ? "Games Played: " + n : "");
-	};
-
-	// Clears the board and all text fields.
-	var clearAll = function clearAll() {
-	  clearBoard();
-	  announce('');
-	  showGameCount('');
-	};
-
-	// Adds buttons for each of the unfinished games.
-	var addPrevGames = function addPrevGames(games) {
-	  $('#game-list-header').text("Incomplete Games:");
-	  for (var i in games) {
-	    var game = document.createElement("button");
-	    var dispText = document.createTextNode(games[i].id);
-	    var insertAt = document.getElementById('insert-here');
-	    var parentDiv = document.getElementById('game-list');
-	    game.appendChild(dispText);
-	    parentDiv.insertBefore(game, insertAt);
-	  }
-	};
-
-	module.exports = {
-	  hideAll: hideAll,
-	  showSections: showSections,
-	  announce: announce,
-	  updateBoard: updateBoard,
-	  clearBoard: clearBoard,
-	  showGameCount: showGameCount,
-	  clearAll: clearAll,
-	  addPrevGames: addPrevGames
-	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
 	'use strict';
 
-	var ttt = __webpack_require__(9);
+	var ttt = __webpack_require__(8);
 	var app = __webpack_require__(6);
-	var display = __webpack_require__(7);
-	var authApi = __webpack_require__(5);
+	var disp = __webpack_require__(9);
+	var api = __webpack_require__(5);
+	var flow = __webpack_require__(10);
 
 	// Generic AJAX request success function.
 	var success = function success(data) {
@@ -481,82 +418,52 @@ webpackJsonp([0],[
 	  console.error(error);
 	};
 
-	// If adding a player is successful, redraws display and updates app data.
+	// If adding a player is successful, update app-data and go to Game Screen
 	var addPlayerOSuccess = function addPlayerOSuccess(data) {
 	  if (data.game) {
 	    app.game = data.game;
 	  }
-	  display.hideAll();
-	  display.showSections('.game-board', '.announce', '.sign-out');
-	  display.updateBoard(app.game.cells);
-	  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
-	  console.log(data);
-	  console.log(app);
+	  flow.gameScreen();
 	};
 
-	// If get games succeeds, print those on-going games in the previous games section.
-	var showGamesSuccess = function showGamesSuccess(data) {
-	  console.log(data.games);
-	  display.addPrevGames(data.games);
-	};
-
-	var getGameCountSuccess = function getGameCountSuccess(data) {
-	  display.showGameCount(data.games.length);
-	};
-
-	// If game successfully opens, update game data to match retreived game, and show game board.
+	// If game successfully opens, update game data to match retreived game and open Player 2 Signin Screen
 	var openGameSuccess = function openGameSuccess(data) {
-	  console.log(data);
 	  app.game = data.game;
-	  console.log(app);
-	  display.hideAll();
-	  display.showSections('.sign-in.player-o', '.sign-out', '.announce');
-	  // display.hideAll();
-	  // display.showSections('.game-board','.announce','.sign-out');
+	  flow.signInUser2();
 	};
 
-	// If Sign-In is successful, redraws display as appropriate.
-	var signInSuccess = function signInSuccess(data) {
-	  if (app.user) {
-	    // If one player is already signed in, add second player to current game.
-	    app.user2 = data.user;
-	    authApi.addPlayerO(addPlayerOSuccess, failure);
-	  } else {
-	    app.user = data.user;
-	    display.hideAll();
-	    display.clearAll();
-	    display.showSections('.create-game', '.prev-games', '.sign-out', '.change-pw');
-	    // Update prev games text with # of games played.
-	    authApi.getGames(getGameCountSuccess, failure);
-	    authApi.getGames(showGamesSuccess, failure, false);
-	  }
-	  console.log(app);
+	// If User 1 Sign-In is successful, update app-data and go to Picker Screen.
+	var signInSuccess_user1 = function signInSuccess_user1(data) {
+	  app.user = data.user;
+	  flow.pickerScreen();
+	};
+
+	// If User 2 Sign-In is successful, update app-data and add Player O.
+	var signInSuccess_user2_add = function signInSuccess_user2_add(data) {
+	  app.user2 = data.user;
+	  api.addPlayerO(addPlayerOSuccess, failure);
+	};
+
+	// If User 2 Sign-In is successful, update app-data only.
+	var signInSuccess_user2 = function signInSuccess_user2(data) {
+	  app.user2 = data.user;
+	  flow.gameScreen();
 	};
 
 	// If Sign-In Fails, tell user to enter a valid username and password.
 	var signInFail = function signInFail() {
-	  display.announce("Please enter a valid username and password.");
+	  disp.announce("Please enter a valid username and password.");
 	};
 
-	// If game creation is successful, redraws display and updates app data with game info.
+	// If game creation is successful, update app data and show signInUser2 Screen.
 	var createGameSuccess = function createGameSuccess(data) {
-	  console.log(data);
 	  app.game = data.game;
-	  console.log(app);
-	  display.hideAll();
-	  display.showSections('.sign-in.player-o', '.sign-out', '.announce');
+	  flow.signInUser2();
 	};
 
-	// If signout is successful, redraws display and clears app data.
+	// If signout is successful, clear app data and go to Start Screen.
 	var signOutSuccess = function signOutSuccess() {
-	  app.user = null;
-	  app.user2 = null;
-	  app.game = null;
-	  console.log("User signed out successfully.");
-	  console.log(app);
-	  display.hideAll();
-	  display.clearAll();
-	  display.showSections('.sign-in.player-x', '.sign-up');
+	  flow.startScreen();
 	};
 
 	// If game is updated successful to end it, check endgame type and update app data and display as appropriate.
@@ -564,48 +471,46 @@ webpackJsonp([0],[
 	  app.game.over = data.game.over;
 	  if (ttt.checkWin(app.game)) {
 	    var winner = ttt.checkWin(app.game);
-	    display.announce('Congratulations, Player ' + winner + '! You Win!');
+	    disp.announce('Congratulations, Player ' + winner + '! You Win!');
 	  } else if (ttt.checkFull(app.game)) {
-	    display.announce('A tie. Womp.');
+	    disp.announce('A tie. Womp.');
 	  }
 	};
 
-	// If a play request is successful, update app data and redraw display as appropriate. Also, check if the play caused a win or a draw and if so update the game again.
+	// If a play request is successful, update app data and redraw disp as appropriate. Also, check if the play caused a win or a draw and if so update the game again.
 	var playSuccess = function playSuccess(data) {
-	  console.log(data);
 	  app.game.cells = data.game.cells;
-	  console.log(app);
-	  display.updateBoard(app.game.cells);
-	  display.announce("Player " + ttt.turn(app.game) + "'s turn.");
+	  disp.updateBoard(app.game.cells);
 	  if (ttt.checkWin(app.game) || ttt.checkFull(app.game)) {
-	    authApi.updateGame(endGameSuccess, failure, null, null, true);
+	    api.updateGame(endGameSuccess, failure, null, null, true);
+	  } else {
+	    disp.announce("Player " + ttt.turn(app.game) + "'s turn.");
 	  }
 	};
 
 	// If a password change request is successful, return to game picker screen.
 	var changePWSuccess = function changePWSuccess() {
-	  console.log("Change Password Success!");
-	  display.hideAll();
-	  display.showSections('.create-game', '.sign-out', '.change-pw');
+	  disp.announce("Change Password Success!");
+	  flow.pickerScreen();
 	};
 
 	module.exports = {
 	  failure: failure,
 	  success: success,
 	  signOutSuccess: signOutSuccess,
-	  signInSuccess: signInSuccess,
+	  signInSuccess_user1: signInSuccess_user1,
+	  signInSuccess_user2: signInSuccess_user2,
+	  signInSuccess_user2_add: signInSuccess_user2_add,
 	  signInFail: signInFail,
 	  createGameSuccess: createGameSuccess,
 	  addPlayerOSuccess: addPlayerOSuccess,
 	  playSuccess: playSuccess,
 	  changePWSuccess: changePWSuccess,
-	  showGamesSuccess: showGamesSuccess,
-	  getGameCountSuccess: getGameCountSuccess,
 	  openGameSuccess: openGameSuccess
 	};
 
 /***/ },
-/* 9 */
+/* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -625,7 +530,7 @@ webpackJsonp([0],[
 	  var cells = game.cells;
 	  for (var i in triplets) {
 	    var t = triplets[i];
-	    if (cells[t[0]] === cells[t[1]] && cells[t[1]] === cells[t[2]]) {
+	    if (cells[t[0]] && cells[t[0]] === cells[t[1]] && cells[t[1]] === cells[t[2]]) {
 	      return cells[t[0]];
 	    }
 	  }
@@ -685,16 +590,172 @@ webpackJsonp([0],[
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {'use strict';
+
+	// Array holds selectors for the various sections of the app.
+
+	var sections = ['.sign-up', '.sign-in.user1', '.announce', '.create-game', '.prev-games', '.change-pw', '.sign-out', '.sign-in.user2', '.back-to-picker', '.game-board'];
+
+	// Hide all sections.
+	var hideAll = function hideAll() {
+	  for (var i in sections) {
+	    $(sections[i]).addClass('hide');
+	  }
+	};
+
+	// Displays Sign In and Sign Up Screen
+	var showSections = function showSections() {
+	  for (var i in arguments) {
+	    $(arguments[i]).removeClass('hide');
+	  }
+	};
+
+	// Displays text in the announce field below the board.
+	var announce = function announce(msg) {
+	  $('.announce').text(msg);
+	};
+
+	// Updates the board based on the current game state.
+	var updateBoard = function updateBoard(cells) {
+	  console.log("Update Board");
+	  for (var i in cells) {
+	    $('button#' + i).text(cells[i].toUpperCase());
+	  }
+	};
+
+	// Clears the board.
+	var clearBoard = function clearBoard() {
+	  console.log("Clearing Board");
+	  $('.buttons button').text("");
+	};
+
+	// Shows # games played in Previous Games section
+	var showGameCount = function showGameCount(n) {
+	  $('.game-count').text(n ? "Games Played: " + n : "");
+	};
+
+	// Clears the list of previous games
+	var clearPrevGames = function clearPrevGames() {
+	  console.log("Clearing previous games");
+	  $(".game-button").remove();
+	};
+
+	// Clears the board and all text fields, and resets game and user2 data. If passed true as a parameter, also clears User1 data.
+	var clearAll = function clearAll() {
+	  clearBoard();
+	  announce('');
+	  showGameCount('');
+	  clearPrevGames();
+	};
+
+	// Adds buttons for each of the unfinished games.
+	var addPrevGames = function addPrevGames(games) {
+	  $('#game-list-header').text("Incomplete Games:");
+	  for (var i in games) {
+	    var game = document.createElement("button");
+	    var dispText = document.createTextNode(games[i].id);
+	    var insertAt = document.getElementById('insert-here');
+	    var parentDiv = document.getElementById('game-list');
+	    game.appendChild(dispText);
+	    parentDiv.insertBefore(game, insertAt);
+	  }
+	  $('.game-list button').addClass('game-button');
+	};
+
+	module.exports = {
+	  hideAll: hideAll,
+	  showSections: showSections,
+	  announce: announce,
+	  updateBoard: updateBoard,
+	  clearBoard: clearBoard,
+	  showGameCount: showGameCount,
+	  clearAll: clearAll,
+	  addPrevGames: addPrevGames,
+	  clearPrevGames: clearPrevGames
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ },
 /* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	// Display functions for showing various screens:
+	var disp = __webpack_require__(9);
+	var api = __webpack_require__(5);
+	var app = __webpack_require__(6);
+	var ttt = __webpack_require__(8);
+
+	// Start Screen Display
+	var startScreen = function startScreen() {
+	  disp.hideAll();
+	  disp.clearAll();
+	  app.signOut();
+	  disp.showSections('.sign-in.user1', '.sign-up', '.announce');
+	  console.log(app);
+	};
+
+	// Game Picker Screen Display
+	var pickerScreen = function pickerScreen() {
+	  disp.hideAll();
+	  disp.clearAll();
+	  app.clearGame();
+	  disp.showSections('.create-game', '.prev-games', '.change-pw', '.sign-out');
+	  api.getGames(function (data) {
+	    return disp.showGameCount(data.games.length);
+	  }, function (error) {
+	    return console.log(error);
+	  });
+	  api.getGames(function (data) {
+	    return disp.addPrevGames(data.games);
+	  }, function (error) {
+	    return console.log(error);
+	  }, false);
+	  console.log(app);
+	};
+
+	// Sign in Player 2 Display
+	var signInUser2 = function signInUser2() {
+	  disp.hideAll();
+	  disp.showSections('.sign-in.user2', '.announce', '.back-to-picker');
+	  if (app.game.player_o) {
+	    var missingPlayer = app.game.player_o.email === app.user.email ? app.game.player_x.email : app.game.player_o.email;
+	    disp.announce("Please sign in " + missingPlayer + ".");
+	  }
+	  console.log(app);
+	};
+
+	// Game Screen Display
+	var gameScreen = function gameScreen() {
+	  disp.hideAll();
+	  disp.updateBoard(app.game.cells);
+	  disp.announce("Player " + ttt.turn(app.game) + "'s turn.");
+	  disp.showSections('.game-board', '.announce', '.back-to-picker', '.sign-out');
+	  console.log(app);
+	};
+
+	module.exports = {
+	  startScreen: startScreen,
+	  pickerScreen: pickerScreen,
+	  signInUser2: signInUser2,
+	  gameScreen: gameScreen
+	};
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(11);
+	var content = __webpack_require__(12);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(13)(content, {});
+	var update = __webpack_require__(14)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -711,10 +772,10 @@ webpackJsonp([0],[
 	}
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(12)();
+	exports = module.exports = __webpack_require__(13)();
 	// imports
 
 
@@ -725,7 +786,7 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	/*
@@ -781,7 +842,7 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -1033,21 +1094,21 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["$"] = __webpack_require__(2);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(2);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["getFormFields"] = __webpack_require__(4);
