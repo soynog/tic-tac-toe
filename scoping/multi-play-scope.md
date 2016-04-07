@@ -1,4 +1,4 @@
-download watcher file and add export module line
++++download watcher file and add export module line
 create watcher object
 add on change and on error functions
   for on change function, handle three different types of data
@@ -7,7 +7,7 @@ add on change and on error functions
   if game update, update game state
     prevent game updates while it's not your turn
 HTML/CSS/structural changes:
-  Play online option
-  Host vs. join a game
+  +++ Join game online option
+  Option to wait for someone to join rather than logging in a second player from your comp.
   +++In game, Display game ID#, primary player name, and player letter
     +++getPlayer('o' or 'x') helper function returns email addy
