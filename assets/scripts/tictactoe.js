@@ -11,12 +11,11 @@ const validMove = function (game, index) {
 
 // Check-Win function that takes a board of cells and checks for a win.
 const checkWin = function (game) {
-  console.log("Checking win");
-  let triplets = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  let triplets = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],
+                  [1,4,7],[2,5,8],[0,4,8],[2,4,6]];
   let cells = game.cells;
   for (let i in triplets) {
     let t = triplets[i];
-    console.log(t);
     if (cells[t[0]] && cells[t[0]] === cells[t[1]] && cells[t[1]] === cells[t[2]]) {
       return cells[t[0]];
     }
