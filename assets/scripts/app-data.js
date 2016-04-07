@@ -30,6 +30,9 @@ const app = {
       }
     }
     return false;
+  },
+  isRemote: () => {
+    return (app.localUsers.length === 1);
   }
 };
 

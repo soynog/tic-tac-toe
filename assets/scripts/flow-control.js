@@ -16,7 +16,7 @@ const startScreen = function() {
 };
 
 // Game Picker Screen Display
-const pickerScreen = function() {
+const pickerScreen = function(msg) {
   disp.hideAll();
   disp.clearAll();
   app.clearGame();
@@ -28,11 +28,14 @@ const pickerScreen = function() {
     data => disp.addPrevGames(data.games),
     error => console.log(error),
     false);
+  if (msg) {
+    disp.announce(msg);
+  }
   console.log(app);
 };
 
 // Sign in Player 2 Display
-const signInUser2 = function() {
+const signInUser2 = function(msg) {
   disp.hideAll();
   disp.showSections('.sign-in.user2','.announce','.back-to-picker');
   if (app.game.player_o) {
@@ -40,12 +43,14 @@ const signInUser2 = function() {
       app.game.player_x.email : app.game.player_o.email;
     disp.announce("Please sign in " + missingPlayer + ".");
   }
+  if (msg) {
+    disp.announce(msg);
+  }
   console.log(app);
 };
 
 // Refresh game board and announcements
-const gameRefresh = function() {
-  console.log("Refreshing board");
+const gameRefresh = function(msg) {
   disp.updateGameTitle(app.game.id);
   disp.updateBoard(app.game.cells);
   let player = ttt.turn(app.game);
@@ -53,7 +58,6 @@ const gameRefresh = function() {
 
   // If game is not over, check for a winner or end state, and if so update the game and refresh again. If not, display whose turn it is.
   if (!app.game.over) {
-    console.log("Game not over");
     if(ttt.checkWin(app.game) || ttt.checkFull(app.game)) {
       api.updateGame(
           (data) => {
@@ -66,7 +70,6 @@ const gameRefresh = function() {
       disp.announce("Player " + player + "'s turn. Go ahead " + email + "!");
     }
   } else {
-    console.log("Game over");
     // If game is over, display the appropriate ending message
     if(ttt.checkWin(app.game)) {
       let winner = ttt.checkWin(app.game);
@@ -76,16 +79,25 @@ const gameRefresh = function() {
       disp.announce('A tie. Womp.');
     }
   }
+  if (msg) {
+    disp.announce(msg);
+  }
+
+  console.log("Refreshed.");
+  console.log(app);
 };
 
 // Game Screen Display
-const gameScreen = function() {
+const gameScreen = function(msg) {
   disp.hideAll();
   // app.localUsers.push() = !!app.user2; // Check if it's a hotseat game by seeing if there's a user2 .
   // app.userLetter = app.game.player_o.email === app.user.email ? 'o' : 'x'; // Check which letter the primary user is.
   gameRefresh();
   console.log(app);
   disp.showSections('.game-board','.announce','.back-to-picker','.sign-out');
+  if (msg) {
+    disp.announce(msg);
+  }
 };
 
 
