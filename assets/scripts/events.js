@@ -6,7 +6,6 @@ const api = require('./api');
 const ui = require('./ui');
 const app = require('./app-data');
 const ttt = require('./tictactoe');
-const disp = require('./display');
 const flow = require('./flow-control');
 
 const signInHandlers = () => {
@@ -52,6 +51,13 @@ const signInHandlers = () => {
     } else {
       console.log("Game already created!");
     }
+  });
+
+  // Join a game by ID
+  $('.join-game').on('submit', function (event) {
+    event.preventDefault();
+    let id = getFormFields(this).id;
+    console.log(id);
   });
 
   // Open an incomplete gameHandlers
