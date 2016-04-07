@@ -43,18 +43,55 @@ const signInUser2 = function() {
   console.log(app);
 };
 
+// Refresh game board and announcements
+const gameRefresh = function() {
+  console.log("Refreshing board");
+  console.log(app);
+  console.log(ttt.checkWin(app.game));
+  disp.updateBoard(app.game.cells);
+  let player = ttt.turn(app.game);
+  let email = app.getPlayerEmail(player);
+
+  // If game is not over, check for a winner or end state, and if so update the game and refresh again. If not, display whose turn it is.
+  if (!app.game.over) {
+    console.log("Game not over");
+    if(ttt.checkWin(app.game) || ttt.checkFull(app.game)) {
+      api.updateGame(
+          (data) => {
+            app.game.over = data.game.over;
+            gameRefresh();
+          },
+          (err) => console.log(err),
+          null, null, true);
+    } else {
+      disp.announce("Player " + player + "'s turn. Go ahead " + email + "!");
+    }
+  } else {
+    console.log("Game over");
+    // If game is over, display the appropriate ending message
+    if(ttt.checkWin(app.game)) {
+      let winner = ttt.checkWin(app.game);
+      let winnerEmail = app.getPlayerEmail(winner);
+      disp.announce('Player ' + winner + ' wins! Congratulations ' + winnerEmail + '!');
+    } else if (ttt.checkFull(app.game)) {
+      disp.announce('A tie. Womp.');
+    }
+  }
+};
+
 // Game Screen Display
 const gameScreen = function() {
   disp.hideAll();
-  disp.updateBoard(app.game.cells);
-  disp.announce("Player " + ttt.turn(app.game) + "'s turn.");
+  gameRefresh();
   disp.showSections('.game-board','.announce','.back-to-picker','.sign-out');
   console.log(app);
 };
+
 
 module.exports = {
   startScreen,
   pickerScreen,
   signInUser2,
   gameScreen,
+  gameRefresh,
 };
