@@ -2,15 +2,16 @@
 
 // Array holds selectors for the various sections of the app.
 const sections = [
-  '.game-board',
-  '.announce',
   '.sign-up',
-  '.sign-in.player-x',
-  '.sign-in.player-o',
+  '.sign-in.user1',
+  '.announce',
   '.create-game',
-  '.sign-out',
-  '.change-pw',
   '.prev-games',
+  '.change-pw',
+  '.sign-out',
+  '.sign-in.user2',
+  '.back-to-picker',
+  '.game-board',
 ];
 
 // Hide all sections.
@@ -51,11 +52,18 @@ const showGameCount = function(n) {
   $('.game-count').text( n ? "Games Played: " + n : "" );
 };
 
-// Clears the board and all text fields.
+// Clears the list of previous games
+const clearPrevGames = function() {
+  console.log("Clearing previous games");
+  $(".game-button").remove();
+};
+
+// Clears the board and all text fields, and resets game and user2 data. If passed true as a parameter, also clears User1 data.
 const clearAll = function() {
   clearBoard();
   announce('');
   showGameCount('');
+  clearPrevGames();
 };
 
 // Adds buttons for each of the unfinished games.
@@ -69,6 +77,7 @@ const addPrevGames = function(games) {
     game.appendChild(dispText);
     parentDiv.insertBefore(game,insertAt);
   }
+  $('.game-list button').addClass('game-button');
 };
 
 module.exports = {
@@ -80,4 +89,5 @@ module.exports = {
   showGameCount,
   clearAll,
   addPrevGames,
+  clearPrevGames,
 };

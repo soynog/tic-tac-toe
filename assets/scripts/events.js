@@ -2,46 +2,56 @@
 
 const getFormFields = require('../../lib/get-form-fields');
 
-const authApi = require('./auth/api');
-const authUi = require('./auth/ui');
+const api = require('./api');
+const ui = require('./ui');
 const app = require('./app-data');
-const ttt = require('./game/tictactoe');
-const display = require('./display');
+const ttt = require('./tictactoe');
+const disp = require('./display');
+const flow = require('./flow-control');
 
 const signInHandlers = () => {
   // Create a new user
   $('.sign-up').on('submit', function (event) {
     let data = getFormFields(this);
     event.preventDefault();
-    console.log(data);
-    authApi.signUp(authUi.success, authUi.failure, data);
+    api.signUp(ui.success, ui.failure, data);
   });
 
   // Sign in an existing user
   $('.sign-in').on('submit', function (event) {
-    let data = getFormFields(this);
     event.preventDefault();
-    if (app.game) {
-      if (data.credentials.email === app.game.player_o.email) {
-        authApi.signIn(authUi.addPlayerOSuccess, authUi.signInFail, data);
-      } else {
-        display.announce("Please sign in as " + app.game.player_o.email + ".");
-      }
+    let data = getFormFields(this);
+    if (!app.game) {
+      // If no game exists yet, sign in user as primary user and go to picker screen.
+      api.signIn(ui.signInSuccess_user1, ui.signInFail, data);
     } else {
-      authApi.signIn(authUi.signInSuccess, authUi.signInFail, data);
+      // If a game already exists, determine if a second player is still needed.
+      if (!app.game.player_o) {
+        // If the game only has one player, sign the user in as player O and add them to the game.
+        api.signIn(ui.signInSuccess_user2_add, ui.signInFail, data);
+      } else {
+        // If the game already has a player O, check to make sure the user signing in matches the correct user, and sign them in (without Adding to the game since they're already added).
+        if (data.credentials.email === app.game.player_o.email || data.credentials.email === app.game.player_x.email) {
+          api.signIn(ui.signInSuccess_user2, ui.signInFail, data);
+        }
+      }
     }
   });
 
   // Sign out of current user
   $('.sign-out').on('submit', function (event) {
     event.preventDefault();
-    authApi.signOut(authUi.signOutSuccess, authUi.failure);
+    api.signOut(ui.signOutSuccess, ui.failure);
   });
 
   // Start a new game
   $('.create-game').on('submit', function (event) {
     event.preventDefault();
-    authApi.createGame(authUi.createGameSuccess, authUi.failure);
+    if(!app.game) {
+      api.createGame(ui.createGameSuccess, ui.failure);
+    } else {
+      console.log("Game already created!");
+    }
   });
 
   // Open an incomplete gameHandlers
@@ -50,9 +60,7 @@ const signInHandlers = () => {
     if($(event.target).is("button")) {
       let gameId = $(event.target).text();
       // Login player O
-
-      authApi.getGame(authUi.openGameSuccess, authUi.failure, gameId);
-
+      api.getGame(ui.openGameSuccess, ui.failure, gameId);
     }
   });
 
@@ -60,7 +68,13 @@ const signInHandlers = () => {
   $('.change-pw').on('submit', function (event) {
     let data = getFormFields(this);
     event.preventDefault();
-    authApi.changePW(authUi.changePWSuccess, authUi.failure, data);
+    api.changePW(ui.changePWSuccess, ui.failure, data);
+  });
+
+  // Back to game picker
+  $('.back-to-picker').on('submit', function (event) {
+    event.preventDefault();
+    flow.pickerScreen();
   });
 };
 
@@ -70,8 +84,9 @@ const gameHandlers = () => {
     if($(event.target).is("button")) {
       event.preventDefault();
       let index = $(event.target).attr('id');
+      let playTurn = ttt.turn(app.game);
       if(!app.game.over && ttt.validMove(app.game,index)) {
-        authApi.updateGame(authUi.playSuccess,authUi.failure, index, ttt.turn(app.game), false);
+        api.updateGame(ui.playSuccess,ui.failure, index, playTurn, false);
       }
     }
   });
