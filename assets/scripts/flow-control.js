@@ -47,6 +47,10 @@ const signInUser2 = function() {
 const gameRefresh = function() {
   console.log("Refreshing board");
   console.log(app);
+
+  // Check if it's a hotseat game by seeing if there's a user2 signed in.
+  app.hotseat = !!app.user2;
+
   console.log(ttt.checkWin(app.game));
   disp.updateGameTitle(app.game.id);
   disp.updateBoard(app.game.cells);
@@ -84,8 +88,8 @@ const gameRefresh = function() {
 const gameScreen = function() {
   disp.hideAll();
   gameRefresh();
-  disp.showSections('.game-board','.announce','.back-to-picker','.sign-out');
   console.log(app);
+  disp.showSections('.game-board','.announce','.back-to-picker','.sign-out');
 };
 
 
