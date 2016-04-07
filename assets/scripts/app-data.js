@@ -1,5 +1,7 @@
 'use strict';
 
+
+
 const app = {
   api: 'http://tic-tac-toe.wdibos.com',
   localUsers: [], // Push users to this as they sign in.
@@ -7,7 +9,7 @@ const app = {
   clearGame: () => {
     app.game = null;
     if (app.localUsers.length > 1) {
-      app.localUsers[1] = null;
+      delete app.localUsers[1];
     }
   },
   signOut: () => {
@@ -20,6 +22,14 @@ const app = {
     } else if (letter === 'o' && app.game && app.game.player_o) {
       return app.game.player_o.email;
     }
+  },
+  myTurn: (playTurn) => {
+    for (let i in app.localUsers) {
+      if (app.localUsers[i].email === app.getPlayerEmail(playTurn)) {
+        return true;
+      }
+    }
+    return false;
   }
 };
 
