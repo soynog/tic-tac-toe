@@ -62,7 +62,7 @@ const getGame = function(success, failure, id) {
 // Sign out of current user.
 const signOut = function(success, failure) {
   console.log("Signing Out");
-  if (app.user) {
+  if (app.localUsers.length > 0) {
     $.ajax({
       method: 'DELETE',
       url: app.api + '/sign-out/' + app.localUsers[0].id,
