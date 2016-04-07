@@ -6,6 +6,7 @@ const sections = [
   '.sign-in.user1',
   '.announce',
   '.create-game',
+  '.join-game',
   '.prev-games',
   '.change-pw',
   '.sign-out',
