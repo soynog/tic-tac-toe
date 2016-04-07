@@ -10,4 +10,4 @@ HTML/CSS/structural changes:
   Play online option
   Host vs. join a game
   In game, Display game ID#, primary player name, and player letter
-    getPlayer('o' or 'x') helper function returns email addy
+    +++getPlayer('o' or 'x') helper function returns email addy

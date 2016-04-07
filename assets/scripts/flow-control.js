@@ -48,6 +48,7 @@ const gameRefresh = function() {
   console.log("Refreshing board");
   console.log(app);
   console.log(ttt.checkWin(app.game));
+  disp.updateGameTitle(app.game.id);
   disp.updateBoard(app.game.cells);
   let player = ttt.turn(app.game);
   let email = app.getPlayerEmail(player);

@@ -41,6 +41,12 @@ const updateBoard = function(cells) {
   }
 };
 
+// Update the game board title.
+const updateGameTitle = function(id) {
+  console.log("Update Title");
+  $('.game-title').text("Game #" + id);
+};
+
 // Clears the board.
 const clearBoard = function() {
   console.log("Clearing Board");
@@ -90,4 +96,5 @@ module.exports = {
   clearAll,
   addPrevGames,
   clearPrevGames,
+  updateGameTitle,
 };

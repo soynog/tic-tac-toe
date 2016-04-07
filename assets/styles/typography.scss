@@ -12,6 +12,13 @@ h1 {
   font-size: $lg-font-size;
 }
 
+h2 {
+  color: $dark;
+  font-family: $txt-font-family;
+  font-size: $md-font-size;
+  text-align: center;
+}
+
 p {
   color: $dark;
   font-family: $hd-font-family;
