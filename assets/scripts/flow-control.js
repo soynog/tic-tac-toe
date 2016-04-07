@@ -46,12 +46,6 @@ const signInUser2 = function() {
 // Refresh game board and announcements
 const gameRefresh = function() {
   console.log("Refreshing board");
-  console.log(app);
-
-  // Check if it's a hotseat game by seeing if there's a user2 signed in.
-  app.hotseat = !!app.user2;
-
-  console.log(ttt.checkWin(app.game));
   disp.updateGameTitle(app.game.id);
   disp.updateBoard(app.game.cells);
   let player = ttt.turn(app.game);
@@ -87,6 +81,8 @@ const gameRefresh = function() {
 // Game Screen Display
 const gameScreen = function() {
   disp.hideAll();
+  app.hotseat = !!app.user2; // Check if it's a hotseat game by seeing if there's a user2 .
+  app.userLetter = app.game.player_o.email === app.user.email ? 'o' : 'x'; // Check which letter the primary user is.
   gameRefresh();
   console.log(app);
   disp.showSections('.game-board','.announce','.back-to-picker','.sign-out');
