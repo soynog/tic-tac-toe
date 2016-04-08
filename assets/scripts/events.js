@@ -6,7 +6,6 @@ const api = require('./api');
 const ui = require('./ui');
 const app = require('./app-data');
 const ttt = require('./tictactoe');
-const disp = require('./display');
 const flow = require('./flow-control');
 
 const signInHandlers = () => {
@@ -45,13 +44,33 @@ const signInHandlers = () => {
   });
 
   // Start a new game
-  $('.create-game').on('submit', function (event) {
+  $('.create-hotseat').on('submit', function (event) {
     event.preventDefault();
     if(!app.game) {
-      api.createGame(ui.createGameSuccess, ui.failure);
+      api.createGame(ui.createHotseatSuccess, ui.failure);
     } else {
       console.log("Game already created!");
     }
+  });
+
+  $('.create-remote').on('submit', function (event) {
+    event.preventDefault();
+    console.log("Creating Remote...");
+    if(!app.game) {
+      api.createGame(ui.createRemoteSuccess, ui.failure);
+    } else {
+      console.log("Game already created!");
+    }
+  });
+
+  // Join a game by ID
+  $('.join-game').on('submit', function (event) {
+    event.preventDefault();
+    console.log("Joining game...");
+    let id = getFormFields(this).id;
+    // Try joining the game. If it succeeds, add player O. If it fails, get the info and join it like a previous game.
+    api.joinGame( ui.addPlayerOSuccess, ui.failure, id);
+    api.getGame( ui.joinRemoteSuccess, ui.failure, id);
   });
 
   // Open an incomplete gameHandlers
@@ -85,7 +104,10 @@ const gameHandlers = () => {
       event.preventDefault();
       let index = $(event.target).attr('id');
       let playTurn = ttt.turn(app.game);
-      if(!app.game.over && ttt.validMove(app.game,index)) {
+      // Before Updating: Check if game is live, the current player is signed in on this computer, and the move is valid.
+      if( !app.game.over &&
+          app.myTurn(playTurn) &&
+          ttt.validMove(app.game,index)) {
         api.updateGame(ui.playSuccess,ui.failure, index, playTurn, false);
       }
     }

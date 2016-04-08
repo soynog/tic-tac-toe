@@ -14,6 +14,9 @@
         </div>
       </header>
       <div class="game-board hide">
+        <div>
+          <h2 class="game-title"></h2>
+        </div>
         <div class="buttons">
           <div class="ttt-row" id="rowA">
             <button id="0"></button>
@@ -32,10 +35,23 @@
           </div>
         </div>
       </div>
-      <form class="create-game hide">
+      <form class="create-hotseat hide">
         <fieldset>
-          <legend>New Game</legend>
-          <input type="submit" name="submit" value="Create Game">
+          <legend>New Hotseat Game</legend>
+          <input type="submit" name="submit" class="create-hotseat" value="New Hotseat Game">
+        </fieldset>
+      </form>
+      <form class="create-remote hide">
+        <fieldset>
+          <legend>New Remote Game</legend>
+          <input type="submit" name="submit" class="create-remote" value="New Remote Game">
+        </fieldset>
+      </form>
+      <form class="join-game hide">
+        <fieldset>
+          <legend>(Re-)Join a Remote Game</legend>
+          <input type="text" name="id" value="" placeholder="Enter Game ID to join">
+          <input type="submit" name="submit" value="Join Game">
         </fieldset>
       </form>
       <form class="prev-games hide">

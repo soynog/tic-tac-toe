@@ -5,7 +5,9 @@ const sections = [
   '.sign-up',
   '.sign-in.user1',
   '.announce',
-  '.create-game',
+  '.create-hotseat',
+  '.create-remote',
+  '.join-game',
   '.prev-games',
   '.change-pw',
   '.sign-out',
@@ -35,10 +37,16 @@ const announce = function(msg) {
 
 // Updates the board based on the current game state.
 const updateBoard = function(cells) {
-  console.log("Update Board");
+  console.log("Updating Board");
   for (let i in cells) {
     $('button#' + i).text(cells[i].toUpperCase());
   }
+};
+
+// Update the game board title.
+const updateGameTitle = function(id) {
+  console.log("Updating Title");
+  $('.game-title').text("Game #" + id);
 };
 
 // Clears the board.
@@ -68,7 +76,7 @@ const clearAll = function() {
 
 // Adds buttons for each of the unfinished games.
 const addPrevGames = function(games) {
-  $('#game-list-header').text("Incomplete Games:");
+  $('#game-list-header').text("Incomplete Games (click to play hotseat): ");
   for (let i in games) {
     let game = document.createElement("button");
     let dispText = document.createTextNode(games[i].id);
@@ -90,4 +98,5 @@ module.exports = {
   clearAll,
   addPrevGames,
   clearPrevGames,
+  updateGameTitle,
 };

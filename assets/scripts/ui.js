@@ -1,10 +1,9 @@
 'use strict';
 
-const ttt = require('./tictactoe.js');
 const app = require('./app-data');
-const disp = require('./display');
 const api = require('./api');
 const flow = require('./flow-control');
+const createWatcher = require('./game-watcher');
 
 // Generic AJAX request success function.
 const success = (data) => {
@@ -23,74 +22,104 @@ const addPlayerOSuccess = (data) => {
     app.game = data.game;
   }
   flow.gameScreen();
+  console.log("Adding Player O");
+  console.log(app);
+  if (app.isRemote()) {
+    createWatcher();
+  }
+};
+
+// If game already has 2 players, join it like a previous game. Otherwise, add player O and join it.
+const joinRemoteSuccess = (data) => {
+  console.log("Join Remote Successful");
+  if (data.game.player_o) {   // If game already has a player O...
+    console.log("Joining existing game");
+    app.game = data.game;
+    console.log(app);
+    flow.gameScreen();
+    console.log(app.isRemote);
+    if (app.isRemote()) {
+      createWatcher();
+    }
+  } else { // If there isn't a player O, add current player.
+    let id = data.game.id;
+    let token = app.localUsers[0].token;
+    console.log("Joining new remote game. Calling addPlayerO with " + id + " and " + token + ".");
+    api.addPlayerO(addPlayerOSuccess,failure,id,token);
+  }
 };
 
 // If game successfully opens, update game data to match retreived game and open Player 2 Signin Screen
 const openGameSuccess = (data) => {
   app.game = data.game;
+  console.log("Opening Game");
+  console.log(app);
   flow.signInUser2();
 };
 
 // If User 1 Sign-In is successful, update app-data and go to Picker Screen.
 const signInSuccess_user1 = (data) => {
-  app.user = data.user;
+  app.localUsers.push(data.user);
+  console.log("Pushing User 1");
+  console.log(app);
   flow.pickerScreen();
 };
 
 // If User 2 Sign-In is successful, update app-data and add Player O.
 const signInSuccess_user2_add = (data) => {
-  app.user2 = data.user;
+  app.localUsers.push(data.user);
+  console.log("Pushing User 2");
+  console.log(app);
   api.addPlayerO(addPlayerOSuccess, failure);
 };
 
 // If User 2 Sign-In is successful, update app-data only.
 const signInSuccess_user2 = (data) => {
-  app.user2 = data.user;
+  app.localUsers.push(data.user);
+  console.log("Pushing User 2");
+  console.log(app);
   flow.gameScreen();
 };
 
 // If Sign-In Fails, tell user to enter a valid username and password.
 const signInFail = () => {
-  disp.announce("Please enter a valid username and password.");
+  flow.pickerScreen("Please enter a valid username and password.");
 };
 
 // If game creation is successful, update app data and show signInUser2 Screen.
-const createGameSuccess = (data) => {
+const createHotseatSuccess = (data) => {
   app.game = data.game;
+  console.log("Creating hotseat game");
+  console.log(app);
   flow.signInUser2();
+};
+
+// If game creation is successful, go directly to game screen.
+const createRemoteSuccess = (data) => {
+  app.game = data.game;
+  console.log("Creating Remote Game");
+  console.log(app);
+  flow.gameScreen("Waiting for a remote player to sign in...");
+  createWatcher();
 };
 
 // If signout is successful, clear app data and go to Start Screen.
 const signOutSuccess = () => {
+  console.log("Signing out");
   flow.startScreen();
 };
 
-// If game is updated successful to end it, check endgame type and update app data and display as appropriate.
-const endGameSuccess = (data) => {
-  app.game.over = data.game.over;
-  if(ttt.checkWin(app.game)) {
-    let winner = ttt.checkWin(app.game);
-    disp.announce('Congratulations, Player ' + winner + '! You Win!');
-  } else if (ttt.checkFull(app.game)) {
-    disp.announce('A tie. Womp.');
-  }
-};
-
-// If a play request is successful, update app data and redraw disp as appropriate. Also, check if the play caused a win or a draw and if so update the game again.
+// If a play request is successful, update app data and refresh the game board. Also, check if the play caused a win or a draw and if so update the game again.
 const playSuccess = (data) => {
   app.game.cells = data.game.cells;
-  disp.updateBoard(app.game.cells);
-  if(ttt.checkWin(app.game) || ttt.checkFull(app.game)) {
-    api.updateGame(endGameSuccess, failure, null, null, true);
-  } else {
-    disp.announce("Player " + ttt.turn(app.game) + "'s turn.");
-  }
+  console.log("Making a play");
+  flow.gameRefresh();
 };
 
 // If a password change request is successful, return to game picker screen.
 const changePWSuccess = () => {
-  disp.announce("Change Password Success!");
-  flow.pickerScreen();
+  console.log("Changing password");
+  flow.pickerScreen("Change Password Success!");
 };
 
 module.exports = {
@@ -101,9 +130,11 @@ module.exports = {
   signInSuccess_user2,
   signInSuccess_user2_add,
   signInFail,
-  createGameSuccess,
+  createHotseatSuccess,
+  createRemoteSuccess,
   addPlayerOSuccess,
   playSuccess,
   changePWSuccess,
   openGameSuccess,
+  joinRemoteSuccess,
 };
