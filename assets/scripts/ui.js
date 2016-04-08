@@ -16,15 +16,6 @@ const failure = (error) => {
   console.error(error);
 };
 
-// Updates app data with game data and refreshes view.
-const watchGameSuccess = (data) => {
-  console.log("Watching Game");
-  console.log(data);
-  app.game = data.game;
-  console.log(app);
-  flow.gameRefresh();
-};
-
 // If adding a player is successful, update app-data and go to Game Screen
 const addPlayerOSuccess = (data) => {
   if (data.game) {
@@ -35,6 +26,25 @@ const addPlayerOSuccess = (data) => {
   console.log(app);
   if (app.isRemote()) {
     createWatcher();
+  }
+};
+
+// If game already has 2 players, join it like a previous game. Otherwise, add player O and join it.
+const joinRemoteSuccess = (data) => {
+  console.log("Join Remote Successful");
+  if (data.game.player_o) {   // If game already has a player O...
+    console.log("Joining existing game");
+    app.game = data.game;
+    console.log(app);
+    flow.gameScreen();
+    if (app.isRemote()) {
+      createWatcher();
+    }
+  } else { // If there isn't a player O, add current player.
+    let id = data.game.id;
+    let token = app.localUsers[0].token;
+    console.log("Joining new remote game. Calling addPlayerO with " + id + " and " + token + ".");
+    api.addPlayerO(addPlayerOSuccess,failure,id,token);
   }
 };
 
@@ -105,7 +115,6 @@ const changePWSuccess = () => {
 module.exports = {
   failure,
   success,
-  watchGameSuccess,
   signOutSuccess,
   signInSuccess_user1,
   signInSuccess_user2,
@@ -117,4 +126,5 @@ module.exports = {
   playSuccess,
   changePWSuccess,
   openGameSuccess,
+  joinRemoteSuccess,
 };

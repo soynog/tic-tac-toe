@@ -5,6 +5,16 @@ const app = require('./app-data');
 const api = require('./api');
 const flow = require('./flow-control');
 
+
+// Updates app data with game data and refreshes view.
+const watchGameSuccess = (data) => {
+  console.log("Watching Game");
+  console.log(data);
+  app.game = data.game;
+  console.log(app);
+  flow.gameRefresh();
+};
+
 // Create Game Watcher
 const createWatcher = function() {
   let gameWatcher = remote.resourceWatcher(
@@ -16,12 +26,12 @@ const createWatcher = function() {
     if (data.timeout) { //not an error
       gameWatcher.close();
       return console.warn(data.timeout);
+      api.signOut(data => console.log(data),err => console.log(err));
     } else if (data.game) {
         console.log("Received Game Data");
         console.log(data);
         api.getGame(watchGameSuccess,e => console.log(e),app.game.id);
     } else {
-      console.log(data);
       console.log("thumpTHUMP");
     }
   });
@@ -30,15 +40,6 @@ const createWatcher = function() {
     console.log("WATCHER SEES ERROR");
     console.error('an error has occured with the stream', e);
   });
-};
-
-// Updates app data with game data and refreshes view.
-const watchGameSuccess = (data) => {
-  console.log("Watching Game");
-  console.log(data);
-  app.game = data.game;
-  console.log(app);
-  flow.gameRefresh();
 };
 
 module.exports = createWatcher;
