@@ -17,3 +17,4 @@
 Modify join game to allow you to re-join games remotely.
 Need to update api.joinGame so that it knows whether to add in user O
  or just sign into the game. But always creates a watcher.
+Responsive so that mobile is automatically zoomed in
