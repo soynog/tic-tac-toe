@@ -13,15 +13,15 @@ webpackJsonp([0],[
 	__webpack_require__(1);
 
 	// styles
-	__webpack_require__(11);
+	__webpack_require__(13);
 
 	// attach jQuery globally
-	__webpack_require__(15);
-	__webpack_require__(16);
+	__webpack_require__(17);
+	__webpack_require__(18);
 
 	// attach getFormFields globally
 
-	__webpack_require__(17);
+	__webpack_require__(19);
 
 /***/ },
 /* 1 */
@@ -30,7 +30,7 @@ webpackJsonp([0],[
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
 
 	var events = __webpack_require__(3);
-	var flow = __webpack_require__(10);
+	var flow = __webpack_require__(8);
 
 	// On document ready
 	$(function () {
@@ -57,9 +57,8 @@ webpackJsonp([0],[
 	var api = __webpack_require__(5);
 	var ui = __webpack_require__(7);
 	var app = __webpack_require__(6);
-	var ttt = __webpack_require__(8);
-	var disp = __webpack_require__(9);
-	var flow = __webpack_require__(10);
+	var ttt = __webpack_require__(10);
+	var flow = __webpack_require__(8);
 
 	var signInHandlers = function signInHandlers() {
 	  // Create a new user
@@ -97,13 +96,33 @@ webpackJsonp([0],[
 	  });
 
 	  // Start a new game
-	  $('.create-game').on('submit', function (event) {
+	  $('.create-hotseat').on('submit', function (event) {
 	    event.preventDefault();
 	    if (!app.game) {
-	      api.createGame(ui.createGameSuccess, ui.failure);
+	      api.createGame(ui.createHotseatSuccess, ui.failure);
 	    } else {
 	      console.log("Game already created!");
 	    }
+	  });
+
+	  $('.create-remote').on('submit', function (event) {
+	    event.preventDefault();
+	    console.log("Creating Remote...");
+	    if (!app.game) {
+	      api.createGame(ui.createRemoteSuccess, ui.failure);
+	    } else {
+	      console.log("Game already created!");
+	    }
+	  });
+
+	  // Join a game by ID
+	  $('.join-game').on('submit', function (event) {
+	    event.preventDefault();
+	    console.log("Joining game...");
+	    var id = getFormFields(this).id;
+	    // Try joining the game. If it succeeds, add player O. If it fails, get the info and join it like a previous game.
+	    api.joinGame(ui.addPlayerOSuccess, ui.failure, id);
+	    api.getGame(ui.joinRemoteSuccess, ui.failure, id);
 	  });
 
 	  // Open an incomplete gameHandlers
@@ -137,7 +156,8 @@ webpackJsonp([0],[
 	      event.preventDefault();
 	      var index = $(event.target).attr('id');
 	      var playTurn = ttt.turn(app.game);
-	      if (!app.game.over && ttt.validMove(app.game, index)) {
+	      // Before Updating: Check if game is live, the current player is signed in on this computer, and the move is valid.
+	      if (!app.game.over && app.myTurn(playTurn) && ttt.validMove(app.game, index)) {
 	        api.updateGame(ui.playSuccess, ui.failure, index, playTurn, false);
 	      }
 	    }
@@ -259,7 +279,7 @@ webpackJsonp([0],[
 	    method: 'GET',
 	    url: url,
 	    headers: {
-	      Authorization: 'Token token=' + app.user.token
+	      Authorization: 'Token token=' + app.localUsers[0].token
 	    }
 	  }).done(success).fail(failure);
 	};
@@ -270,7 +290,7 @@ webpackJsonp([0],[
 	    method: 'GET',
 	    url: app.api + '/games/' + id,
 	    headers: {
-	      Authorization: 'Token token=' + app.user.token
+	      Authorization: 'Token token=' + app.localUsers[0].token
 	    }
 	  }).done(success).fail(failure);
 	};
@@ -278,12 +298,12 @@ webpackJsonp([0],[
 	// Sign out of current user.
 	var signOut = function signOut(success, failure) {
 	  console.log("Signing Out");
-	  if (app.user) {
+	  if (app.localUsers.length > 0) {
 	    $.ajax({
 	      method: 'DELETE',
-	      url: app.api + '/sign-out/' + app.user.id,
+	      url: app.api + '/sign-out/' + app.localUsers[0].id,
 	      headers: {
-	        Authorization: 'Token token=' + app.user.token
+	        Authorization: 'Token token=' + app.localUsers[0].token
 	      }
 	    }).done(success).fail(failure);
 	  } else {
@@ -298,18 +318,18 @@ webpackJsonp([0],[
 	    method: 'POST',
 	    url: app.api + '/games',
 	    headers: {
-	      Authorization: 'Token token=' + app.user.token
+	      Authorization: 'Token token=' + app.localUsers[0].token
 	    }
 	  }).done(success).fail(failure);
 	};
 
 	// Add player O to the new game.
-	var addPlayerO = function addPlayerO(success, failure) {
+	var addPlayerO = function addPlayerO(success, failure, id, token) {
 	  $.ajax({
 	    method: 'PATCH',
-	    url: app.api + '/games/' + app.game.id,
+	    url: app.api + '/games/' + (id || app.game.id),
 	    headers: {
-	      Authorization: 'Token token=' + app.user2.token
+	      Authorization: 'Token token=' + (token || app.localUsers[1].token)
 	    }
 	  }).done(success).fail(failure);
 	};
@@ -337,7 +357,7 @@ webpackJsonp([0],[
 	    method: 'PATCH',
 	    url: app.api + '/games/' + app.game.id,
 	    headers: {
-	      Authorization: 'Token token=' + app.user.token
+	      Authorization: 'Token token=' + app.localUsers[0].token
 	    },
 	    data: data
 	  }).done(success).fail(failure);
@@ -354,12 +374,18 @@ webpackJsonp([0],[
 	  }
 	  $.ajax({
 	    method: 'PATCH',
-	    url: app.api + '/change-password/' + app.user.id,
+	    url: app.api + '/change-password/' + app.localUsers[0].id,
 	    headers: {
-	      Authorization: 'Token token=' + app.user.token
+	      Authorization: 'Token token=' + app.localUsers[0].token
 	    },
 	    data: data
 	  }).done(success).fail(failure);
+	};
+
+	var joinGame = function joinGame(success, failure, id) {
+	  var token = app.localUsers[0].token;
+	  console.log("In JoinGame function. Calling addPlayerO with " + id + " and " + token + ".");
+	  addPlayerO(success, failure, id, token);
 	};
 
 	module.exports = {
@@ -371,7 +397,8 @@ webpackJsonp([0],[
 	  updateGame: updateGame,
 	  changePW: changePW,
 	  getGames: getGames,
-	  getGame: getGame
+	  getGame: getGame,
+	  joinGame: joinGame
 	};
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
@@ -383,13 +410,35 @@ webpackJsonp([0],[
 
 	var app = {
 	  api: 'http://tic-tac-toe.wdibos.com',
+	  localUsers: [], // Push users to this as they sign in.
+	  game: null,
 	  clearGame: function clearGame() {
-	    app.user2 = null;
 	    app.game = null;
+	    if (app.localUsers.length > 1) {
+	      delete app.localUsers[1];
+	    }
 	  },
 	  signOut: function signOut() {
-	    app.user = null;
 	    app.clearGame();
+	    app.localUsers = [];
+	  },
+	  getPlayerEmail: function getPlayerEmail(letter) {
+	    if (letter === 'x' && app.game && app.game.player_x) {
+	      return app.game.player_x.email;
+	    } else if (letter === 'o' && app.game && app.game.player_o) {
+	      return app.game.player_o.email;
+	    }
+	  },
+	  myTurn: function myTurn(playTurn) {
+	    for (var i in app.localUsers) {
+	      if (app.localUsers[i].email === app.getPlayerEmail(playTurn)) {
+	        return true;
+	      }
+	    }
+	    return false;
+	  },
+	  isRemote: function isRemote() {
+	    return app.localUsers.length === 1;
 	  }
 	};
 
@@ -401,11 +450,10 @@ webpackJsonp([0],[
 
 	'use strict';
 
-	var ttt = __webpack_require__(8);
 	var app = __webpack_require__(6);
-	var disp = __webpack_require__(9);
 	var api = __webpack_require__(5);
-	var flow = __webpack_require__(10);
+	var flow = __webpack_require__(8);
+	var createWatcher = __webpack_require__(11);
 
 	// Generic AJAX request success function.
 	var success = function success(data) {
@@ -424,74 +472,106 @@ webpackJsonp([0],[
 	    app.game = data.game;
 	  }
 	  flow.gameScreen();
+	  console.log("Adding Player O");
+	  console.log(app);
+	  if (app.isRemote()) {
+	    createWatcher();
+	  }
+	};
+
+	// If game already has 2 players, join it like a previous game. Otherwise, add player O and join it.
+	var joinRemoteSuccess = function joinRemoteSuccess(data) {
+	  console.log("Join Remote Successful");
+	  if (data.game.player_o) {
+	    // If game already has a player O...
+	    console.log("Joining existing game");
+	    app.game = data.game;
+	    console.log(app);
+	    flow.gameScreen();
+	    console.log(app.isRemote);
+	    if (app.isRemote()) {
+	      createWatcher();
+	    }
+	  } else {
+	    // If there isn't a player O, add current player.
+	    var id = data.game.id;
+	    var token = app.localUsers[0].token;
+	    console.log("Joining new remote game. Calling addPlayerO with " + id + " and " + token + ".");
+	    api.addPlayerO(addPlayerOSuccess, failure, id, token);
+	  }
 	};
 
 	// If game successfully opens, update game data to match retreived game and open Player 2 Signin Screen
 	var openGameSuccess = function openGameSuccess(data) {
 	  app.game = data.game;
+	  console.log("Opening Game");
+	  console.log(app);
 	  flow.signInUser2();
 	};
 
 	// If User 1 Sign-In is successful, update app-data and go to Picker Screen.
 	var signInSuccess_user1 = function signInSuccess_user1(data) {
-	  app.user = data.user;
+	  app.localUsers.push(data.user);
+	  console.log("Pushing User 1");
+	  console.log(app);
 	  flow.pickerScreen();
 	};
 
 	// If User 2 Sign-In is successful, update app-data and add Player O.
 	var signInSuccess_user2_add = function signInSuccess_user2_add(data) {
-	  app.user2 = data.user;
+	  app.localUsers.push(data.user);
+	  console.log("Pushing User 2");
+	  console.log(app);
 	  api.addPlayerO(addPlayerOSuccess, failure);
 	};
 
 	// If User 2 Sign-In is successful, update app-data only.
 	var signInSuccess_user2 = function signInSuccess_user2(data) {
-	  app.user2 = data.user;
+	  app.localUsers.push(data.user);
+	  console.log("Pushing User 2");
+	  console.log(app);
 	  flow.gameScreen();
 	};
 
 	// If Sign-In Fails, tell user to enter a valid username and password.
 	var signInFail = function signInFail() {
-	  disp.announce("Please enter a valid username and password.");
+	  flow.pickerScreen("Please enter a valid username and password.");
 	};
 
 	// If game creation is successful, update app data and show signInUser2 Screen.
-	var createGameSuccess = function createGameSuccess(data) {
+	var createHotseatSuccess = function createHotseatSuccess(data) {
 	  app.game = data.game;
+	  console.log("Creating hotseat game");
+	  console.log(app);
 	  flow.signInUser2();
+	};
+
+	// If game creation is successful, go directly to game screen.
+	var createRemoteSuccess = function createRemoteSuccess(data) {
+	  app.game = data.game;
+	  console.log("Creating Remote Game");
+	  console.log(app);
+	  flow.gameScreen("Waiting for a remote player to sign in...");
+	  createWatcher();
 	};
 
 	// If signout is successful, clear app data and go to Start Screen.
 	var signOutSuccess = function signOutSuccess() {
+	  console.log("Signing out");
 	  flow.startScreen();
 	};
 
-	// If game is updated successful to end it, check endgame type and update app data and display as appropriate.
-	var endGameSuccess = function endGameSuccess(data) {
-	  app.game.over = data.game.over;
-	  if (ttt.checkWin(app.game)) {
-	    var winner = ttt.checkWin(app.game);
-	    disp.announce('Congratulations, Player ' + winner + '! You Win!');
-	  } else if (ttt.checkFull(app.game)) {
-	    disp.announce('A tie. Womp.');
-	  }
-	};
-
-	// If a play request is successful, update app data and redraw disp as appropriate. Also, check if the play caused a win or a draw and if so update the game again.
+	// If a play request is successful, update app data and refresh the game board. Also, check if the play caused a win or a draw and if so update the game again.
 	var playSuccess = function playSuccess(data) {
 	  app.game.cells = data.game.cells;
-	  disp.updateBoard(app.game.cells);
-	  if (ttt.checkWin(app.game) || ttt.checkFull(app.game)) {
-	    api.updateGame(endGameSuccess, failure, null, null, true);
-	  } else {
-	    disp.announce("Player " + ttt.turn(app.game) + "'s turn.");
-	  }
+	  console.log("Making a play");
+	  flow.gameRefresh();
 	};
 
 	// If a password change request is successful, return to game picker screen.
 	var changePWSuccess = function changePWSuccess() {
-	  disp.announce("Change Password Success!");
-	  flow.pickerScreen();
+	  console.log("Changing password");
+	  flow.pickerScreen("Change Password Success!");
 	};
 
 	module.exports = {
@@ -502,15 +582,231 @@ webpackJsonp([0],[
 	  signInSuccess_user2: signInSuccess_user2,
 	  signInSuccess_user2_add: signInSuccess_user2_add,
 	  signInFail: signInFail,
-	  createGameSuccess: createGameSuccess,
+	  createHotseatSuccess: createHotseatSuccess,
+	  createRemoteSuccess: createRemoteSuccess,
 	  addPlayerOSuccess: addPlayerOSuccess,
 	  playSuccess: playSuccess,
 	  changePWSuccess: changePWSuccess,
-	  openGameSuccess: openGameSuccess
+	  openGameSuccess: openGameSuccess,
+	  joinRemoteSuccess: joinRemoteSuccess
 	};
 
 /***/ },
 /* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	// Display functions for showing various screens:
+	var disp = __webpack_require__(9);
+	var api = __webpack_require__(5);
+	var app = __webpack_require__(6);
+	var ttt = __webpack_require__(10);
+
+	// Start Screen Display
+	var startScreen = function startScreen() {
+	  disp.hideAll();
+	  disp.clearAll();
+	  app.signOut();
+	  disp.showSections('.sign-in.user1', '.sign-up', '.announce');
+	  console.log("Start Screen");
+	  console.log(app);
+	};
+
+	// Game Picker Screen Display
+	var pickerScreen = function pickerScreen(msg) {
+	  disp.hideAll();
+	  disp.clearAll();
+	  app.clearGame();
+	  disp.showSections('.create-hotseat', '.create-remote', '.join-game', '.prev-games', '.change-pw', '.sign-out');
+	  api.getGames(function (data) {
+	    return disp.showGameCount(data.games.length);
+	  }, function (error) {
+	    return console.log(error);
+	  });
+	  api.getGames(function (data) {
+	    return disp.addPrevGames(data.games);
+	  }, function (error) {
+	    return console.log(error);
+	  }, false);
+	  if (msg) {
+	    disp.announce(msg);
+	  }
+	  console.log("Picker Screen");
+	  console.log(app);
+	};
+
+	// Sign in Player 2 Display
+	var signInUser2 = function signInUser2(msg) {
+	  disp.hideAll();
+	  disp.showSections('.sign-in.user2', '.announce', '.back-to-picker');
+	  if (app.game.player_o) {
+	    var missingPlayer = app.game.player_o.email === app.localUsers[0].email ? app.game.player_x.email : app.game.player_o.email;
+	    disp.announce("Please sign in " + missingPlayer + ".");
+	  }
+	  if (msg) {
+	    disp.announce(msg);
+	  }
+	  console.log("Sign In User 2 Screen");
+	  console.log(app);
+	};
+
+	// Refresh game board and announcements
+	var gameRefresh = function gameRefresh(msg) {
+	  disp.updateGameTitle(app.game.id);
+	  disp.updateBoard(app.game.cells);
+	  var player = ttt.turn(app.game);
+	  var email = app.getPlayerEmail(player);
+
+	  // If game is not over, check for a winner or end state, and if so update the game and refresh again. If not, display whose turn it is.
+	  if (!app.game.over) {
+	    if (ttt.checkWin(app.game) || ttt.checkFull(app.game)) {
+	      api.updateGame(function (data) {
+	        app.game.over = data.game.over;
+	        gameRefresh();
+	      }, function (err) {
+	        return console.log(err);
+	      }, null, null, true);
+	    } else {
+	      disp.announce("Player " + player + "'s turn. Go ahead " + email + "!");
+	    }
+	  } else {
+	    // If game is over, display the appropriate ending message
+	    if (ttt.checkWin(app.game)) {
+	      var winner = ttt.checkWin(app.game);
+	      var winnerEmail = app.getPlayerEmail(winner);
+	      disp.announce('Player ' + winner + ' wins! Congratulations ' + winnerEmail + '!');
+	    } else if (ttt.checkFull(app.game)) {
+	      disp.announce('A tie. Womp.');
+	    }
+	  }
+	  if (msg) {
+	    disp.announce(msg);
+	  }
+
+	  console.log("Refreshed.");
+	  console.log(app);
+	};
+
+	// Game Screen Display
+	var gameScreen = function gameScreen(msg) {
+	  disp.hideAll();
+	  gameRefresh();
+	  disp.showSections('.game-board', '.announce', '.back-to-picker', '.sign-out');
+	  if (msg) {
+	    disp.announce(msg);
+	  }
+
+	  console.log("Game Screen");
+	  console.log(app);
+	};
+
+	module.exports = {
+	  startScreen: startScreen,
+	  pickerScreen: pickerScreen,
+	  signInUser2: signInUser2,
+	  gameScreen: gameScreen,
+	  gameRefresh: gameRefresh
+	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {'use strict';
+
+	// Array holds selectors for the various sections of the app.
+
+	var sections = ['.sign-up', '.sign-in.user1', '.announce', '.create-hotseat', '.create-remote', '.join-game', '.prev-games', '.change-pw', '.sign-out', '.sign-in.user2', '.back-to-picker', '.game-board'];
+
+	// Hide all sections.
+	var hideAll = function hideAll() {
+	  for (var i in sections) {
+	    $(sections[i]).addClass('hide');
+	  }
+	};
+
+	// Displays Sign In and Sign Up Screen
+	var showSections = function showSections() {
+	  for (var i in arguments) {
+	    $(arguments[i]).removeClass('hide');
+	  }
+	};
+
+	// Displays text in the announce field below the board.
+	var announce = function announce(msg) {
+	  $('.announce').text(msg);
+	};
+
+	// Updates the board based on the current game state.
+	var updateBoard = function updateBoard(cells) {
+	  console.log("Updating Board");
+	  for (var i in cells) {
+	    $('button#' + i).text(cells[i].toUpperCase());
+	  }
+	};
+
+	// Update the game board title.
+	var updateGameTitle = function updateGameTitle(id) {
+	  console.log("Updating Title");
+	  $('.game-title').text("Game #" + id);
+	};
+
+	// Clears the board.
+	var clearBoard = function clearBoard() {
+	  console.log("Clearing Board");
+	  $('.buttons button').text("");
+	};
+
+	// Shows # games played in Previous Games section
+	var showGameCount = function showGameCount(n) {
+	  $('.game-count').text(n ? "Games Played: " + n : "");
+	};
+
+	// Clears the list of previous games
+	var clearPrevGames = function clearPrevGames() {
+	  console.log("Clearing previous games");
+	  $(".game-button").remove();
+	};
+
+	// Clears the board and all text fields, and resets game and user2 data. If passed true as a parameter, also clears User1 data.
+	var clearAll = function clearAll() {
+	  clearBoard();
+	  announce('');
+	  showGameCount('');
+	  clearPrevGames();
+	};
+
+	// Adds buttons for each of the unfinished games.
+	var addPrevGames = function addPrevGames(games) {
+	  $('#game-list-header').text("Incomplete Games (click to play hotseat): ");
+	  for (var i in games) {
+	    var game = document.createElement("button");
+	    var dispText = document.createTextNode(games[i].id);
+	    var insertAt = document.getElementById('insert-here');
+	    var parentDiv = document.getElementById('game-list');
+	    game.appendChild(dispText);
+	    parentDiv.insertBefore(game, insertAt);
+	  }
+	  $('.game-list button').addClass('game-button');
+	};
+
+	module.exports = {
+	  hideAll: hideAll,
+	  showSections: showSections,
+	  announce: announce,
+	  updateBoard: updateBoard,
+	  clearBoard: clearBoard,
+	  showGameCount: showGameCount,
+	  clearAll: clearAll,
+	  addPrevGames: addPrevGames,
+	  clearPrevGames: clearPrevGames,
+	  updateGameTitle: updateGameTitle
+	};
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
+
+/***/ },
+/* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {'use strict';
@@ -526,11 +822,13 @@ webpackJsonp([0],[
 
 	// Check-Win function that takes a board of cells and checks for a win.
 	var checkWin = function checkWin(game) {
+	  console.log("Checking Win");
 	  var triplets = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 	  var cells = game.cells;
 	  for (var i in triplets) {
 	    var t = triplets[i];
 	    if (cells[t[0]] && cells[t[0]] === cells[t[1]] && cells[t[1]] === cells[t[2]]) {
+	      console.log("We have a winner!");
 	      return cells[t[0]];
 	    }
 	  }
@@ -590,172 +888,121 @@ webpackJsonp([0],[
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
 
 /***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function($) {'use strict';
-
-	// Array holds selectors for the various sections of the app.
-
-	var sections = ['.sign-up', '.sign-in.user1', '.announce', '.create-game', '.prev-games', '.change-pw', '.sign-out', '.sign-in.user2', '.back-to-picker', '.game-board'];
-
-	// Hide all sections.
-	var hideAll = function hideAll() {
-	  for (var i in sections) {
-	    $(sections[i]).addClass('hide');
-	  }
-	};
-
-	// Displays Sign In and Sign Up Screen
-	var showSections = function showSections() {
-	  for (var i in arguments) {
-	    $(arguments[i]).removeClass('hide');
-	  }
-	};
-
-	// Displays text in the announce field below the board.
-	var announce = function announce(msg) {
-	  $('.announce').text(msg);
-	};
-
-	// Updates the board based on the current game state.
-	var updateBoard = function updateBoard(cells) {
-	  console.log("Update Board");
-	  for (var i in cells) {
-	    $('button#' + i).text(cells[i].toUpperCase());
-	  }
-	};
-
-	// Clears the board.
-	var clearBoard = function clearBoard() {
-	  console.log("Clearing Board");
-	  $('.buttons button').text("");
-	};
-
-	// Shows # games played in Previous Games section
-	var showGameCount = function showGameCount(n) {
-	  $('.game-count').text(n ? "Games Played: " + n : "");
-	};
-
-	// Clears the list of previous games
-	var clearPrevGames = function clearPrevGames() {
-	  console.log("Clearing previous games");
-	  $(".game-button").remove();
-	};
-
-	// Clears the board and all text fields, and resets game and user2 data. If passed true as a parameter, also clears User1 data.
-	var clearAll = function clearAll() {
-	  clearBoard();
-	  announce('');
-	  showGameCount('');
-	  clearPrevGames();
-	};
-
-	// Adds buttons for each of the unfinished games.
-	var addPrevGames = function addPrevGames(games) {
-	  $('#game-list-header').text("Incomplete Games:");
-	  for (var i in games) {
-	    var game = document.createElement("button");
-	    var dispText = document.createTextNode(games[i].id);
-	    var insertAt = document.getElementById('insert-here');
-	    var parentDiv = document.getElementById('game-list');
-	    game.appendChild(dispText);
-	    parentDiv.insertBefore(game, insertAt);
-	  }
-	  $('.game-list button').addClass('game-button');
-	};
-
-	module.exports = {
-	  hideAll: hideAll,
-	  showSections: showSections,
-	  announce: announce,
-	  updateBoard: updateBoard,
-	  clearBoard: clearBoard,
-	  showGameCount: showGameCount,
-	  clearAll: clearAll,
-	  addPrevGames: addPrevGames,
-	  clearPrevGames: clearPrevGames
-	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(2)))
-
-/***/ },
-/* 10 */
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	// Display functions for showing various screens:
-	var disp = __webpack_require__(9);
-	var api = __webpack_require__(5);
+	var remote = __webpack_require__(12);
 	var app = __webpack_require__(6);
-	var ttt = __webpack_require__(8);
+	var api = __webpack_require__(5);
+	var flow = __webpack_require__(8);
 
-	// Start Screen Display
-	var startScreen = function startScreen() {
-	  disp.hideAll();
-	  disp.clearAll();
-	  app.signOut();
-	  disp.showSections('.sign-in.user1', '.sign-up', '.announce');
+	// Updates app data with game data and refreshes view.
+	var watchGameSuccess = function watchGameSuccess(data) {
+	  console.log("Watching Game");
+	  console.log(data);
+	  app.game = data.game;
 	  console.log(app);
+	  flow.gameRefresh();
 	};
 
-	// Game Picker Screen Display
-	var pickerScreen = function pickerScreen() {
-	  disp.hideAll();
-	  disp.clearAll();
-	  app.clearGame();
-	  disp.showSections('.create-game', '.prev-games', '.change-pw', '.sign-out');
-	  api.getGames(function (data) {
-	    return disp.showGameCount(data.games.length);
-	  }, function (error) {
-	    return console.log(error);
+	// Create Game Watcher
+	var createWatcher = function createWatcher() {
+	  var gameWatcher = remote.resourceWatcher(app.api + '/games/' + app.game.id + '/watch', { Authorization: 'Token token=' + app.localUsers[0].token });
+	  gameWatcher.on('change', function (data) {
+	    console.log("WATCHER SEES CHANGE");
+	    if (data.timeout) {
+	      //not an error
+	      gameWatcher.close();
+	      return console.warn(data.timeout);
+	      api.signOut(function (data) {
+	        return console.log(data);
+	      }, function (err) {
+	        return console.log(err);
+	      });
+	    } else if (data.game) {
+	      console.log("Received Game Data");
+	      console.log(data);
+	      api.getGame(watchGameSuccess, function (e) {
+	        return console.log(e);
+	      }, app.game.id);
+	    } else {
+	      console.log("thumpTHUMP");
+	    }
 	  });
-	  api.getGames(function (data) {
-	    return disp.addPrevGames(data.games);
-	  }, function (error) {
-	    return console.log(error);
-	  }, false);
-	  console.log(app);
+
+	  gameWatcher.on('error', function (e) {
+	    console.log("WATCHER SEES ERROR");
+	    console.error('an error has occured with the stream', e);
+	  });
 	};
 
-	// Sign in Player 2 Display
-	var signInUser2 = function signInUser2() {
-	  disp.hideAll();
-	  disp.showSections('.sign-in.user2', '.announce', '.back-to-picker');
-	  if (app.game.player_o) {
-	    var missingPlayer = app.game.player_o.email === app.user.email ? app.game.player_x.email : app.game.player_o.email;
-	    disp.announce("Please sign in " + missingPlayer + ".");
-	  }
-	  console.log(app);
-	};
+	module.exports = createWatcher;
 
-	// Game Screen Display
-	var gameScreen = function gameScreen() {
-	  disp.hideAll();
-	  disp.updateBoard(app.game.cells);
-	  disp.announce("Player " + ttt.turn(app.game) + "'s turn.");
-	  disp.showSections('.game-board', '.announce', '.back-to-picker', '.sign-out');
-	  console.log(app);
+/***/ },
+/* 12 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	var resourceWatcher = function resourceWatcher(url, conf) {
+	  var token = function token(conf) {
+	    return conf && (conf = conf.Authorization) && (conf = typeof conf === 'string' && conf.split('=')) && Array.isArray(conf) && conf[1];
+	  };
+	  url += '?token=' + token(conf);
+	  url += conf.timeout ? '&timeout=' + conf.timeout : '';
+	  var es = new EventSource(url); //jshint ignore: line
+	  var close = function close() {
+	    es.close();
+	  };
+	  var makeHandler = function makeHandler(handler, close) {
+	    return function (e) {
+	      if (close) {
+	        close();
+	      }
+	      return handler(e.data ? JSON.parse(e.data) : e);
+	    };
+	  };
+
+	  var on = function on(event, handler) {
+	    switch (event) {
+	      case 'connect':
+	        es.onopen = makeHandler(handler);
+	        break;
+	      case 'change':
+	        es.onmessage = makeHandler(handler);
+	        break;
+	      case 'error':
+	        es.onerror = makeHandler(handler, close);
+	        break;
+	      default:
+	        console.error('Unknown event type:' + event);
+	        break;
+	    }
+	  };
+
+	  return {
+	    close: close,
+	    on: on
+	  };
 	};
 
 	module.exports = {
-	  startScreen: startScreen,
-	  pickerScreen: pickerScreen,
-	  signInUser2: signInUser2,
-	  gameScreen: gameScreen
+	  resourceWatcher: resourceWatcher
 	};
 
 /***/ },
-/* 11 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(12);
+	var content = __webpack_require__(14);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(14)(content, {});
+	var update = __webpack_require__(16)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -772,21 +1019,21 @@ webpackJsonp([0],[
 	}
 
 /***/ },
-/* 12 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(13)();
+	exports = module.exports = __webpack_require__(15)();
 	// imports
 
 
 	// module
-	exports.push([module.id, "header {\n  text-align: center; }\n\nbody {\n  background-color: #fcfcfa; }\n\nform {\n  clear: both;\n  margin: 20px auto; }\n\ninput {\n  background-color: #eee;\n  border: 1px #ddd solid;\n  margin: 5px; }\n\n.cont {\n  clear: both;\n  margin: 0 auto;\n  width: 240px; }\n\n.announce {\n  clear: both;\n  text-align: center;\n  width: 240px; }\n\n.hide {\n  display: none; }\n\n.game-board {\n  margin: 0 0 260px; }\n  .game-board .ttt-row {\n    margin: 0 auto;\n    width: 210px; }\n    .game-board .ttt-row button {\n      background-color: #eee;\n      border: 1px #ddd solid;\n      float: left;\n      height: 60px;\n      line-height: 60px;\n      margin: 5px;\n      padding: 0;\n      text-align: center;\n      width: 60px; }\n\n.prev-games .game-list {\n  clear: both;\n  text-align: center; }\n  .prev-games .game-list button {\n    background-color: #eee;\n    border: 1px #ddd solid;\n    margin: 5px;\n    padding: 5px 20px; }\n\nh1 {\n  color: #333;\n  font-family: monospace;\n  font-size: 24pt; }\n\np {\n  color: #333;\n  font-family: monospace;\n  font-size: 12pt; }\n\nlegend {\n  font-family: sans-serif; }\n\n.announce {\n  font-family: sans-serif;\n  font-size: 18pt; }\n\n.game-board button {\n  font-family: \"Century Gothic\", sans-serif;\n  font-size: 40pt;\n  font-weight: bold;\n  text-align: center; }\n\n.prev-games p {\n  font-family: sans-serif; }\n", ""]);
+	exports.push([module.id, "header {\n  text-align: center; }\n\nbody {\n  background-color: #fcfcfa; }\n\nform {\n  clear: both;\n  margin: 20px auto; }\n\nbutton,\ninput {\n  background-color: #eee;\n  border: 1px #ddd solid;\n  margin: 5px;\n  padding: 5px 20px; }\n\ninput[type=text],\ninput[type=password] {\n  background-color: #fcfcfa; }\n\n.cont {\n  clear: both;\n  margin: 0 auto;\n  width: 240px; }\n\n.announce {\n  clear: both;\n  text-align: center;\n  width: 240px; }\n\n.hide {\n  display: none; }\n\n.game-board {\n  margin: 0 0 260px; }\n  .game-board .ttt-row {\n    margin: 0 auto;\n    width: 210px; }\n    .game-board .ttt-row button {\n      background-color: #eee;\n      border: 1px #ddd solid;\n      float: left;\n      height: 60px;\n      line-height: 60px;\n      margin: 5px;\n      padding: 0;\n      text-align: center;\n      width: 60px; }\n\n.prev-games .game-list {\n  clear: both;\n  text-align: center; }\n\nh1 {\n  color: #333;\n  font-family: monospace;\n  font-size: 24pt; }\n\nh2 {\n  color: #333;\n  font-family: sans-serif;\n  font-size: 18pt;\n  text-align: center; }\n\np {\n  color: #333;\n  font-family: monospace;\n  font-size: 12pt; }\n\nlegend {\n  font-family: sans-serif; }\n\n.announce {\n  font-family: sans-serif;\n  font-size: 18pt; }\n\n.game-board button {\n  font-family: \"Century Gothic\", sans-serif;\n  font-size: 40pt;\n  font-weight: bold;\n  text-align: center; }\n\n.prev-games p {\n  font-family: sans-serif; }\n", ""]);
 
 	// exports
 
 
 /***/ },
-/* 13 */
+/* 15 */
 /***/ function(module, exports) {
 
 	/*
@@ -842,7 +1089,7 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 14 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -1094,21 +1341,21 @@ webpackJsonp([0],[
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["$"] = __webpack_require__(2);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 16 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["jQuery"] = __webpack_require__(2);
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 17 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(global) {module.exports = global["getFormFields"] = __webpack_require__(4);
