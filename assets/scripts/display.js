@@ -37,7 +37,7 @@ const announce = function(msg) {
 
 // Updates the board based on the current game state.
 const updateBoard = function(cells) {
-  console.log("Update Board");
+  console.log("Updating Board");
   for (let i in cells) {
     $('button#' + i).text(cells[i].toUpperCase());
   }
@@ -45,7 +45,7 @@ const updateBoard = function(cells) {
 
 // Update the game board title.
 const updateGameTitle = function(id) {
-  console.log("Update Title");
+  console.log("Updating Title");
   $('.game-title').text("Game #" + id);
 };
 
@@ -76,7 +76,7 @@ const clearAll = function() {
 
 // Adds buttons for each of the unfinished games.
 const addPrevGames = function(games) {
-  $('#game-list-header').text("Incomplete Games:");
+  $('#game-list-header').text("Incomplete Games (click to play hotseat): ");
   for (let i in games) {
     let game = document.createElement("button");
     let dispText = document.createTextNode(games[i].id);

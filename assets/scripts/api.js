@@ -35,7 +35,6 @@ const signIn = function(success, failure, data) {
 
 // Get list of games played by user.
 const getGames = function(success, failure, over) {
-  console.log(app);
   let url = app.api + '/games' + (over !== undefined ? '/?over=' + String(over) : '');
   $.ajax({
     method: 'GET',

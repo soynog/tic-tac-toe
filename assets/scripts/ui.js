@@ -37,6 +37,7 @@ const joinRemoteSuccess = (data) => {
     app.game = data.game;
     console.log(app);
     flow.gameScreen();
+    console.log(app.isRemote);
     if (app.isRemote()) {
       createWatcher();
     }
@@ -51,6 +52,8 @@ const joinRemoteSuccess = (data) => {
 // If game successfully opens, update game data to match retreived game and open Player 2 Signin Screen
 const openGameSuccess = (data) => {
   app.game = data.game;
+  console.log("Opening Game");
+  console.log(app);
   flow.signInUser2();
 };
 
@@ -86,29 +89,36 @@ const signInFail = () => {
 // If game creation is successful, update app data and show signInUser2 Screen.
 const createHotseatSuccess = (data) => {
   app.game = data.game;
+  console.log("Creating hotseat game");
+  console.log(app);
   flow.signInUser2();
 };
 
 // If game creation is successful, go directly to game screen.
 const createRemoteSuccess = (data) => {
   app.game = data.game;
+  console.log("Creating Remote Game");
+  console.log(app);
   flow.gameScreen("Waiting for a remote player to sign in...");
   createWatcher();
 };
 
 // If signout is successful, clear app data and go to Start Screen.
 const signOutSuccess = () => {
+  console.log("Signing out");
   flow.startScreen();
 };
 
 // If a play request is successful, update app data and refresh the game board. Also, check if the play caused a win or a draw and if so update the game again.
 const playSuccess = (data) => {
   app.game.cells = data.game.cells;
+  console.log("Making a play");
   flow.gameRefresh();
 };
 
 // If a password change request is successful, return to game picker screen.
 const changePWSuccess = () => {
+  console.log("Changing password");
   flow.pickerScreen("Change Password Success!");
 };
 

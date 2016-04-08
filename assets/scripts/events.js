@@ -66,12 +66,11 @@ const signInHandlers = () => {
   // Join a game by ID
   $('.join-game').on('submit', function (event) {
     event.preventDefault();
+    console.log("Joining game...");
     let id = getFormFields(this).id;
-    console.log(id);
     // Try joining the game. If it succeeds, add player O. If it fails, get the info and join it like a previous game.
-    api.joinGame( ui.addPlayerOSuccess,
-                  api.getGame(ui.joinRemoteSuccess, ui.failure, id),
-                  id);
+    api.joinGame( ui.addPlayerOSuccess, ui.failure, id);
+    api.getGame( ui.joinRemoteSuccess, ui.failure, id);
   });
 
   // Open an incomplete gameHandlers
@@ -105,7 +104,6 @@ const gameHandlers = () => {
       event.preventDefault();
       let index = $(event.target).attr('id');
       let playTurn = ttt.turn(app.game);
-      console.log("MyTurn function: " + app.myTurn(playTurn));
       // Before Updating: Check if game is live, the current player is signed in on this computer, and the move is valid.
       if( !app.game.over &&
           app.myTurn(playTurn) &&

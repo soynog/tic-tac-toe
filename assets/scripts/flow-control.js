@@ -12,6 +12,7 @@ const startScreen = function() {
   disp.clearAll();
   app.signOut();
   disp.showSections('.sign-in.user1','.sign-up', '.announce');
+  console.log("Start Screen");
   console.log(app);
 };
 
@@ -31,6 +32,7 @@ const pickerScreen = function(msg) {
   if (msg) {
     disp.announce(msg);
   }
+  console.log("Picker Screen");
   console.log(app);
 };
 
@@ -39,13 +41,16 @@ const signInUser2 = function(msg) {
   disp.hideAll();
   disp.showSections('.sign-in.user2','.announce','.back-to-picker');
   if (app.game.player_o) {
-    let missingPlayer = app.game.player_o.email === app.user.email ?
-      app.game.player_x.email : app.game.player_o.email;
+    let missingPlayer =
+      app.game.player_o.email === app.localUsers[0].email ?
+      app.game.player_x.email :
+      app.game.player_o.email;
     disp.announce("Please sign in " + missingPlayer + ".");
   }
   if (msg) {
     disp.announce(msg);
   }
+  console.log("Sign In User 2 Screen");
   console.log(app);
 };
 
@@ -90,14 +95,14 @@ const gameRefresh = function(msg) {
 // Game Screen Display
 const gameScreen = function(msg) {
   disp.hideAll();
-  // app.localUsers.push() = !!app.user2; // Check if it's a hotseat game by seeing if there's a user2 .
-  // app.userLetter = app.game.player_o.email === app.user.email ? 'o' : 'x'; // Check which letter the primary user is.
   gameRefresh();
-  console.log(app);
   disp.showSections('.game-board','.announce','.back-to-picker','.sign-out');
   if (msg) {
     disp.announce(msg);
   }
+
+  console.log("Game Screen");
+  console.log(app);
 };
 
 

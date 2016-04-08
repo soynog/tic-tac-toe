@@ -15,3 +15,5 @@
   <!-- In game, Display game ID#, primary player name, and player letter -->
     <!-- getPlayer('o' or 'x') helper function returns email addy -->
 Modify join game to allow you to re-join games remotely.
+Need to update api.joinGame so that it knows whether to add in user O
+ or just sign into the game. But always creates a watcher.
